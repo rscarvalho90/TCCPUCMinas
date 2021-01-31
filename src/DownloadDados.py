@@ -36,11 +36,13 @@ class DownloadDados:
         # Faz a leitura da tabela 'Última atualização'
         linhas_tabela = arvore.xpath(
             '/html/body/div[1]/div[3]/main/div/div/div[1]/div[1]/article/div[3]/figure[1]/table[2]/tbody/tr')
-        for row in linhas_tabela:
+        for i in range(0, len(linhas_tabela)):
+            row = linhas_tabela[i]
             columns = row.findall("td")
             mes_ano = columns[0].text
             if mes_ano != 'MÊS/ANO':  # Corrige leitura da primeira linha
-                numero_indice = float(columns[4].text.replace('.', '').replace(',', '.'))
+                mes_ano = columns[0].xpath('strong')[0].text
+                numero_indice = float(columns[4].xpath('strong')[0].text.replace('.', '').replace(',', '.'))
                 df.loc[len(df)] = [data_util.mesano_str_to_mesano_int(mes_ano), numero_indice]
 
         # Faz a leitura da tabela principal
