@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="Correção no extrator da inflação">
-      <change afterPath="$PROJECT_DIR$/src/ModelosUtil.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+    <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ModelosUtil.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosUtil.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,13 +39,15 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.pyOptions" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -100,7 +101,8 @@
       <workItem from="1612554517140" duration="1449000" />
       <workItem from="1612782840758" duration="27000" />
       <workItem from="1613572670139" duration="4000" />
-      <workItem from="1613572695282" duration="12899000" />
+      <workItem from="1613572695282" duration="13023000" />
+      <workItem from="1613998625183" duration="12827000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -109,7 +111,14 @@
       <option name="project" value="LOCAL" />
       <updated>1612127427984</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="...">
+      <created>1613763946357</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1613763946357</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -129,7 +138,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Correção no extrator da inflação" />
-    <option name="LAST_COMMIT_MESSAGE" value="Correção no extrator da inflação" />
+    <MESSAGE value="..." />
+    <option name="LAST_COMMIT_MESSAGE" value="..." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TCC_PUC_Minas$notebook_execucao.coverage" NAME="notebook_execucao Coverage Results" MODIFIED="1612126557407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />

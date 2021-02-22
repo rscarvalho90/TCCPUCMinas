@@ -1,8 +1,8 @@
 from src.DownloadDados import DownloadDados
 from src.Util import CorrigeValores
-from src.ModelosUtil import ArimaUtil
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 
 dd = DownloadDados()
 
@@ -35,23 +35,22 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     sns.lineplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor']).set_title(tributo)
     plt.show()
 
-# Cria modelo ARIMA para predição de dados diários
-# Plota a autocorrelação dos dataframes
-from pandas.plotting import autocorrelation_plot
+# Cria modelo utilizando o Facebook Prophet
+from fbprophet import Prophet
+from src.ModelosUtil import ProphetUtil
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
-ax = {}
 for tributo in pd_arrecad_diaria['Tributo'].unique():
-    ax[tributo] = autocorrelation_plot(arrecad_diaria[tributo]['Valor'], label=tributo, )
+    prophet = Prophet(daily_seasonality=True)
+    pd_prophet = ProphetUtil.transforma_dataframe(arrecad_diaria[tributo], ['Data', 'Valor'])
+    df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
+    df_teste.reset_index(drop=True, inplace=True)
+    prophet.fit(df_treino)
+    predito = prophet.predict(pd.DataFrame(df_teste['ds']))
+    rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+    mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+    prophet.plot(predito)
+    plt.xlabel('Data')
+    plt.ylabel('Valor (R$)')
     plt.show()
-
-pd.DataFrame(ax['IPVA'].lines[5].get_data()[1]).max()
-
-# Faz o tunning dos parâmetros ARIMA para cada tributo
-for tributo in pd_arrecad_diaria['Tributo'].unique():
-    valores_p = [3, 4, 5]
-    valores_d = [1, 2, 3]
-    valores_q = [0, 1, 2]
-    melhor_cfg, menor_aic = ArimaUtil.tunning_parametros(arrecad_diaria[tributo]['Valor'].values, valores_p, valores_d,
-                                                         valores_q)
-    print('A melhor configuração ARIMA para o tributo ' + tributo + ' é ' + str(melhor_cfg) + ' com AIC igual a ' + str(
-        menor_aic))
+    print('Para o tributo '+tributo+' o MAE foi de '+str(mae)+' e o RMSE foi de '+str(rmse))

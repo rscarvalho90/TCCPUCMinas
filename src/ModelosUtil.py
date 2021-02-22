@@ -1,6 +1,28 @@
 from statsmodels.tsa.arima.model import ARIMA
-from sklearn.metrics import mean_squared_error
+import pandas as pd
+from pandas import to_datetime
 
+
+class ProphetUtil:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def transforma_dataframe(df, list_colunas):
+        """ Dado um dataframe e uma lista com as colunas de data e e valor (nesta ordem), retorna um dataframe
+        para que possa ser feito o 'fit' no Prophet. """
+        pd_prophet = pd.DataFrame(df).loc[:, list_colunas]
+        pd_prophet[list_colunas[0]] = to_datetime(pd_prophet[list_colunas[0]])
+
+        return pd_prophet.rename(columns={list_colunas[0]: 'ds', list_colunas[1]: 'y'})
+
+    @staticmethod
+    def divide_treino_teste(df, percentual_treinamento=0.8):
+        """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
+        df_treino = df[:int(0.8*len(df))]
+        df_teste = df[int(0.8*len(df)):]
+
+        return df_treino, df_teste
 
 class ArimaUtil:
     def __init__(self):
