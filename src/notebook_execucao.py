@@ -39,8 +39,10 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 from fbprophet import Prophet
 from src.ModelosUtil import ProphetUtil
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.preprocessing import StandardScaler
 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
+    # Calcula os valores em termos absolutos
     prophet = Prophet(daily_seasonality=True)
     pd_prophet = ProphetUtil.transforma_dataframe(arrecad_diaria[tributo], ['Data', 'Valor'])
     df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
@@ -49,8 +51,31 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     predito = prophet.predict(pd.DataFrame(df_teste['ds']))
     rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
     mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
-    prophet.plot(predito)
+    fig, (sub1) = plt.subplots(1, 1, sharex=True)
+    sub1.fill_between(df_teste['ds'], predito['yhat_upper'], predito['yhat_lower'], facecolor='dodgerblue')
+    pred, = plt.plot(df_teste['ds'], predito['yhat'], c='blue', label='Predito')
+    pred_sup, = plt.plot(df_teste['ds'], predito['yhat_upper'], c='royalblue')
+    pred_inf, = plt.plot(df_teste['ds'], predito['yhat_lower'], c='royalblue')
+    real = plt.scatter(df_teste['ds'], df_teste['y'], s=3, c='orange')
+    plt.legend([pred, pred_sup,  real],
+               ['Predito', 'Predito (limites superior e inferior)', 'Real'],
+               fontsize=8)
+    fig.autofmt_xdate()
     plt.xlabel('Data')
     plt.ylabel('Valor (R$)')
+    plt.title(tributo)
     plt.show()
-    print('Para o tributo '+tributo+' o MAE foi de '+str(mae)+' e o RMSE foi de '+str(rmse))
+
+    # Calcula os valores em desvios-padrões
+    prophet = Prophet(daily_seasonality=True)
+    scaler = StandardScaler()
+    pd_prophet = ProphetUtil.transforma_dataframe(arrecad_diaria[tributo], ['Data', 'Valor'])
+    df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
+    df_treino['y'] = scaler.fit_transform(df_treino['y'].values.reshape(-1, 1))
+    df_teste['y'] = scaler.transform(df_teste['y'].values.reshape(-1, 1))
+    prophet.fit(df_treino)
+    predito = prophet.predict(pd.DataFrame(df_teste['ds']))
+    rmse_dp = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+    mae_dp = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+
+    print('Para o tributo '+tributo+' o MAE foi de '+str(mae)+' ('+str(mae_dp)+' DP) e o RMSE foi de '+str(rmse)+' ('+str(rmse_dp)+' DP)')
