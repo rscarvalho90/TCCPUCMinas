@@ -35,7 +35,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     sns.lineplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor']).set_title(tributo)
     plt.show()
 
-# Cria modelo utilizando o Facebook Prophet
+# Cria modelo univariado utilizando o Facebook Prophet
 from fbprophet import Prophet
 from src.ModelosUtil import ProphetUtil
 from sklearn.metrics import mean_squared_error, mean_absolute_error
@@ -78,4 +78,16 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     rmse_dp = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
     mae_dp = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
 
+    print('Tributo '+tributo+' - Início DF teste : '+str(df_teste.reset_index().loc[0, 'ds'])+' Fim DF teste : '+str(df_teste.reset_index().loc[len(df_teste)-1, 'ds']))
     print('Para o tributo '+tributo+' o MAE foi de '+str(mae)+' ('+str(mae_dp)+' DP) e o RMSE foi de '+str(rmse)+' ('+str(rmse_dp)+' DP)')
+
+# Cria modelo univariado utilizando LSTM
+from src.ModelosUtil import LSTMUtil
+
+for tributo in pd_arrecad_diaria['Tributo'].unique():
+
+    # Utiliza o mesmo método do Prophet para tornar os resultados comparáveis
+    df_treino, df_teste = ProphetUtil.divide_treino_teste(arrecad_diaria[tributo])
+    print('Tributo '+tributo+' - Início DF teste : '+str(df_teste.reset_index().loc[0, 'Data'])+' Fim DF teste : '+str(df_teste.reset_index().loc[len(df_teste)-1, 'Data']))
+    df_treino = LSTMUtil.extrai_componentes_data(df_treino, 'Data')
+    df_teste = LSTMUtil.extrai_componentes_data(df_teste, 'Data')

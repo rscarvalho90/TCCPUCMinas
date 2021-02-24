@@ -24,6 +24,26 @@ class ProphetUtil:
 
         return df_treino, df_teste
 
+
+class LSTMUtil:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def extrai_componentes_data(df, nome_coluna_data):
+        """ Extrai dia, mês e ano para comporem o embedding da rede neural, retornando
+         um dataframe substituindo a coluna da data por três colunas contendo dia, mês e ano. """
+        dia = df[nome_coluna_data].dt.day
+        mes = df[nome_coluna_data].dt.month
+        ano = df[nome_coluna_data].dt.year
+
+        df = df.drop(nome_coluna_data, axis=1)
+        df.insert(loc=0, column='Ano', value=ano)
+        df.insert(loc=0, column='Mes', value=mes)
+        df.insert(loc=0, column='Dia', value=dia)
+
+        return df
+
 class ArimaUtil:
     def __init__(self):
         pass
