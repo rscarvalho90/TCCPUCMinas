@@ -39,7 +39,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 from fbprophet import Prophet
 from src.ModelosUtil import ProphetUtil
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, PowerTransformer
 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Calcula os valores em termos absolutos
@@ -83,11 +83,41 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 
 # Cria modelo univariado utilizando LSTM
 from src.ModelosUtil import LSTMUtil
+from src.ModelosNN import LSTMUnivariada
 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
 
     # Utiliza o mesmo método do Prophet para tornar os resultados comparáveis
     df_treino, df_teste = ProphetUtil.divide_treino_teste(arrecad_diaria[tributo])
     print('Tributo '+tributo+' - Início DF teste : '+str(df_teste.reset_index().loc[0, 'Data'])+' Fim DF teste : '+str(df_teste.reset_index().loc[len(df_teste)-1, 'Data']))
-    df_treino = LSTMUtil.extrai_componentes_data(df_treino, 'Data')
-    df_teste = LSTMUtil.extrai_componentes_data(df_teste, 'Data')
+    df_treino = LSTMUtil.transforma_dataframe(df_treino, 'Data')
+    df_teste = LSTMUtil.transforma_dataframe(df_teste, 'Data')
+
+    # Plota a distribuição de probabilidade dos valores da arrecadação diária dos tributos
+    sns.distplot(df_treino['Valor']).set_title(tributo)
+    plt.show()
+
+    # Plota os boxplots dos valores da arrecadação diária dos tributos
+    sns.boxplot(x=df_treino['Valor']).set_title(tributo)
+    plt.show()
+
+    # Faz os testes com diversos "scalers" para verificar o com menor erro
+
+    # Standard Scaler
+    std_scaler = StandardScaler()
+    valor_treino_std = std_scaler.fit_transform(df_treino['Valor'].values.reshape(-1, 1))
+    valor_teste_std = std_scaler.transform(df_teste['Valor'].values.reshape(-1, 1))
+
+    model = LSTMUnivariada()
+    model.fit()
+
+    # Robust Scaler
+    rbt_scaler = RobustScaler()
+    valor_treino_rbt = rbt_scaler.fit_transform(df_treino['Valor'].values.reshape(-1, 1))
+    valor_teste_rbt = rbt_scaler.transform(df_teste['Valor'].values.reshape(-1, 1))
+
+    # Power Transformer (yeo-johnson)
+    pwr_scaler = PowerTransformer()
+    valor_treino_rbt = pwr_scaler.fit_transform(df_treino['Valor'].values.reshape(-1, 1))
+    valor_teste_rbt = pwr_scaler.transform(df_teste['Valor'].values.reshape(-1, 1))
+

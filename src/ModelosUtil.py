@@ -19,8 +19,8 @@ class ProphetUtil:
     @staticmethod
     def divide_treino_teste(df, percentual_treinamento=0.8):
         """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
-        df_treino = df[:int(0.8*len(df))]
-        df_teste = df[int(0.8*len(df)):]
+        df_treino = df[:int(0.8 * len(df))]
+        df_teste = df[int(0.8 * len(df)):]
 
         return df_treino, df_teste
 
@@ -30,19 +30,23 @@ class LSTMUtil:
         pass
 
     @staticmethod
-    def extrai_componentes_data(df, nome_coluna_data):
-        """ Extrai dia, mês e ano para comporem o embedding da rede neural, retornando
-         um dataframe substituindo a coluna da data por três colunas contendo dia, mês e ano. """
+    def transforma_dataframe(df, nome_coluna_data):
+        """ Retorna um dataframe com as colunas necessárias para aplicação à rede neural LSTM. """
         dia = df[nome_coluna_data].dt.day
         mes = df[nome_coluna_data].dt.month
-        ano = df[nome_coluna_data].dt.year
 
         df = df.drop(nome_coluna_data, axis=1)
-        df.insert(loc=0, column='Ano', value=ano)
+        df = df.drop('Tributo', axis=1)
         df.insert(loc=0, column='Mes', value=mes)
         df.insert(loc=0, column='Dia', value=dia)
 
         return df
+
+    @staticmethod
+    def cria_intervalos_temporais(df):
+        """ Dado um dataframe com os valores diários, gera sequências temporais para alimentarem a
+        rede neural LSTM. """
+
 
 class ArimaUtil:
     def __init__(self):
