@@ -1,6 +1,7 @@
 from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 from pandas import to_datetime
+import numpy as np
 
 
 class ProphetUtil:
@@ -43,9 +44,22 @@ class LSTMUtil:
         return df
 
     @staticmethod
-    def cria_intervalos_temporais(df):
-        """ Dado um dataframe com os valores diários, gera sequências temporais para alimentarem a
-        rede neural LSTM. """
+    def cria_intervalos_temporais(np_array, n_intervalos=5):
+        """ Dado um array NumPy com os valores diários, gera sequências temporais com 3 dimensões
+        para alimentarem a rede neural LSTM. """
+
+        np_valores = np_array
+        np_sequencia = np.empty((0, n_intervalos, 1))
+
+        for i in range(n_intervalos, len(np_valores)):
+            # Adiciona os itens que comporão uma sequência
+            # Cada item é composto por uma sequência, n_intervalos intervalos de tempo e 1 feature)
+            np_item = np.empty((0, n_intervalos, 1))            
+            np_item = np.append(np_item, np_valores[(i-n_intervalos):i, 0].reshape(1, n_intervalos, 1), axis=0)
+            # Adiciona uma sequência à lista de sequências
+            np_sequencia = np.append(np_sequencia, np_item, axis=0)
+
+        return np_sequencia
 
 
 class ArimaUtil:

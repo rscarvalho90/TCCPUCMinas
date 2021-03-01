@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.python.keras.layers import Embedding, Flatten, Concatenate, Dense
 from tensorflow.python.keras.layers.recurrent import LSTM
 
+
 class LSTMUnivariada(tf.keras.Model):
 
     def __init__(self, df):
@@ -10,8 +11,8 @@ class LSTMUnivariada(tf.keras.Model):
         self.cria_rede_neural_univariada(df)
         self.valor = Dense(1, activation='linear', name='Valor')
 
-        ''' O primeiro item da lista se refere ao mês e dia, já
-        o segundo item se refere à LSTM, com 5 períodos (5 dias anteriores à predição) e uma variável (valor). '''
+        ''' O primeiro item da lista se refere ao mÃªs e dia, jÃ¡
+        o segundo item se refere Ã  LSTM, com 5 perÃ­odos (5 dias anteriores Ã  prediÃ§Ã£o) e uma variÃ¡vel (valor). '''
         self.build([(None, 2), (None, 5, 1)])
 
     def cria_rede_neural_univariada(self, df):
@@ -37,14 +38,14 @@ class LSTMUnivariada(tf.keras.Model):
         self.dense_dia_mes_valor = Dense(1, activation='sigmoid', name='dia_mes_valor_dense')
 
     def call(self, inputs, **kwargs):
-        # inputs[0] são os dados de dia e mês
+        # inputs[0] sÃ£o os dados de dia e mÃªs
         dia_mes_tensor = tf.convert_to_tensor(inputs[0])
 
-        # inputs[1] são os dados do valor arrecadado
+        # inputs[1] sÃ£o os dados do valor arrecadado
         valor_tensor = tf.convert_to_tensor(inputs[1])
 
-        # dia_mes_tensor[:, 0] são os dados do dia
-        # dia_mes_tensor[:, 1] são os dados do mês
+        # dia_mes_tensor[:, 0] sÃ£o os dados do dia
+        # dia_mes_tensor[:, 1] sÃ£o os dados do mÃªs
         flt_dia = self.flatten_dia(self.embedding_dia(dia_mes_tensor[:, 0]))
         flt_mes = self.flatten_mes(self.embedding_dia(dia_mes_tensor[:, 1]))
         concat_dia_mes = self.concatenate_dia_mes([flt_dia, flt_mes])

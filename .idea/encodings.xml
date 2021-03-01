@@ -2,6 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/DownloadDados.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/ModelosNN.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/ModelosUtil.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/Util.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/notebook_execucao.py" charset="UTF-8" />
