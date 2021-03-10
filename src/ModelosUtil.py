@@ -1,4 +1,3 @@
-from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 from pandas import to_datetime
 import numpy as np
@@ -24,7 +23,57 @@ class ProphetUtil:
         df_teste = df[int(0.8 * len(df)):]
 
         return df_treino, df_teste
-
+    
+    @staticmethod
+    def agrupa_dados_mensais_em_trimestrais(df):
+        """ Realiza a soma de cada dia que compõe um determinado trimestre, retornando dados mensais. """
+        pd_trimestral = pd.DataFrame(columns=['Trimestre', 'Valor'])
+        meses_trimestre = [4, 7, 10, 1]
+        soma = 0
+        df = df.reset_index(drop=True)
+        
+        for i in range(0, len(df)):
+            mes_atual = df.loc[i, 'Data'].month
+            if i!=0:
+                mes_anterior = df.loc[i-1, 'Data'].month
+            else:
+                mes_anterior = mes_atual
+             
+            # Quando há mudança de trimestre, adiciona o valor da soma trimestral ao dataframe e reseta a soma
+            if mes_atual!=mes_anterior and mes_atual in meses_trimestre:
+                trimestre = str(mes_anterior)+'/'+str(df.loc[i-1, 'Data'].year)
+                pd_trimestral = pd_trimestral.append({'Trimestre': trimestre, 'Valor': soma}, ignore_index=True)
+                soma = 0
+                
+            soma = soma+df.loc[i, 'Valor']
+          
+        # Aloca a soma restante (trimestre incompleto)
+        trimestre = str(mes_anterior)+'/'+str(df.loc[i-1, 'Data'].year)
+        pd_trimestral = pd_trimestral.append({'Trimestre': trimestre, 'Valor': soma}, ignore_index=True)
+        soma = 0
+        
+        return pd_trimestral
+    
+    @staticmethod
+    def adiciona_pib(df_tributo, df_pib):
+        """ Adiciona as colunas contendo os valores do PIB dos trimestres atual e anterior. """
+        for i in range(1, len(df_tributo)):
+            trimestre_atual = str(df_tributo.loc[i, 'ds'].month).zfill(2)+'/'+str(df_tributo.loc[i, 'ds'].year)         
+            trimestre_anterior = str(df_tributo.loc[i-1, 'ds'].month).zfill(2)+'/'+str(df_tributo.loc[i-1, 'ds'].year)
+            
+            try:
+                pib_trimestre_atual = df_pib[df_pib['Trimestre']==trimestre_atual].PIB.item()
+                pib_trimestre_anterior = df_pib[df_pib['Trimestre']==trimestre_anterior].PIB.item()
+                
+                df_tributo.loc[i, 'pib_trim_atual'] = pib_trimestre_atual
+                df_tributo.loc[i, 'pib_trim_ant'] = pib_trimestre_anterior
+            except:
+                print('Trimeste não encontrado '+trimestre_atual)
+          
+        df_tributo = df_tributo.dropna()
+        
+        return df_tributo
+    
 
 class LSTMUtil:
     def __init__(self):
@@ -35,9 +84,10 @@ class LSTMUtil:
         """ Retorna um dataframe com as colunas necessárias para aplicação à rede neural LSTM. """
         dia = df[nome_coluna_data].dt.day
         mes = df[nome_coluna_data].dt.month
+        ano = df[nome_coluna_data].dt.year
 
-        df = df.drop(nome_coluna_data, axis=1)
         df = df.drop('Tributo', axis=1)
+        df.insert(loc=0, column='Ano', value=ano)
         df.insert(loc=0, column='Mes', value=mes)
         df.insert(loc=0, column='Dia', value=dia)
 
@@ -60,36 +110,13 @@ class LSTMUtil:
             np_sequencia = np.append(np_sequencia, np_item, axis=0)
 
         return np_sequencia
-
-
-class ArimaUtil:
-    def __init__(self):
-        pass
-
+    
     @staticmethod
-    def tunning_parametros(X, valores_p, valores_d, valores_q):
-        """ Dado um dataset e três listas de possíveis valores para os parâmetros ARIMA, retorna o conjunto
-        de parâmetros com Akaike Information Critera (AIC). """
-        X = X.astype('float32')
-        menor_aic, melhor_cfg = float("inf"), None
-        for p in valores_p:
-            for d in valores_d:
-                for q in valores_q:
-                    order = (p, d, q)
-                    try:
-                        aic = ArimaUtil.avalia_modelo(X, order)
-                        if aic < menor_aic:
-                            menor_aic, melhor_cfg = aic, order
-                    except:
-                        continue
-        return melhor_cfg, menor_aic
+    def gera_teste_identico_prophet(df, data_inicio_teste, data_fim_teste, n_intervalos=5):
+        """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
+        index_teste = df[df['Data']==data_inicio_teste].index[0]-n_intervalos
+        
+        df_treino = df[:index_teste]
+        df_teste = df[index_teste:]
 
-    @staticmethod
-    def avalia_modelo(X, arima_order):
-        """ Avalia os parâmetros de um modelo ARIMA, retornando o Akaike Information Critera (AIC). """
-        history = [x for x in X]
-
-        model = ARIMA(history, order=arima_order)
-        resultado = model.fit()
-
-        return resultado.aic
+        return df_treino, df_teste

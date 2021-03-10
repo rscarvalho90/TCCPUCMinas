@@ -29,7 +29,7 @@ class CorrigeValores:
             pd_tributo.loc[indice, 'Valor'] = pd_tributo.loc[indice, 'Valor'] * ultimo_numero_indice / numero_indice_atual
 
         return pd_tributo
-
+    
 
 class DataUtil:
     mes_numero = {'Jan': '01', 'Fev': '02', 'Mar': '03', 'Abr': '04', 'Mai': '05', 'Jun': '06', 'Jul': '07',
