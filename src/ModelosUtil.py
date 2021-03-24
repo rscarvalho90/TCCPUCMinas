@@ -14,7 +14,7 @@ class ProphetUtil:
         pd_prophet = pd.DataFrame(df).loc[:, list_colunas]
         pd_prophet[list_colunas[0]] = to_datetime(pd_prophet[list_colunas[0]])
 
-        return pd_prophet.rename(columns={list_colunas[0]: 'ds', list_colunas[1]: 'y'})
+        return pd_prophet.rename(columns={list_colunas[0]: 'ds', list_colunas[1]: 'y'}).reset_index(drop=True)
 
     @staticmethod
     def divide_treino_teste(df, percentual_treinamento=0.8):
@@ -25,7 +25,7 @@ class ProphetUtil:
         return df_treino, df_teste
     
     @staticmethod
-    def agrupa_dados_mensais_em_trimestrais(df):
+    def agrupa_dados_diarios_em_trimestrais(df):
         """ Realiza a soma de cada dia que compõe um determinado trimestre, retornando dados mensais. """
         pd_trimestral = pd.DataFrame(columns=['Trimestre', 'Valor'])
         meses_trimestre = [4, 7, 10, 1]
@@ -55,22 +55,67 @@ class ProphetUtil:
         return pd_trimestral
     
     @staticmethod
-    def adiciona_pib(df_tributo, df_pib):
-        """ Adiciona as colunas contendo os valores do PIB dos trimestres atual e anterior. """
+    def adiciona_pib_rs(df_tributo, df_pib):
+        """ Adiciona as colunas contendo os valores do PIB do trimestre anterior. """
+        meses_trimestre = [3, 6, 9, 12]
+        
         for i in range(1, len(df_tributo)):
-            trimestre_atual = str(df_tributo.loc[i, 'ds'].month).zfill(2)+'/'+str(df_tributo.loc[i, 'ds'].year)         
-            trimestre_anterior = str(df_tributo.loc[i-1, 'ds'].month).zfill(2)+'/'+str(df_tributo.loc[i-1, 'ds'].year)
+            trimestre_atual = str(df_tributo.loc[i, 'ds'].month).zfill(2)+'/'+str(df_tributo.loc[i, 'ds'].year)
+            mes_atual = df_tributo.loc[i, 'ds'].month
+            ano_atual = df_tributo.loc[i, 'ds'].year
+            
+            if mes_atual in meses_trimestre:
+                mes_atual_index = meses_trimestre.index(mes_atual)
+                if(mes_atual_index != 0):
+                    mes_trimestre_anterior = meses_trimestre[mes_atual_index-1]
+                    ano_trimestre_anterior = ano_atual
+                else:
+                    mes_trimestre_anterior = meses_trimestre[len(meses_trimestre)-1]
+                    ano_trimestre_anterior = ano_atual-1
+            else:
+                while(mes_atual not in meses_trimestre):
+                    if(mes_atual>1):
+                        mes_atual -= 1
+                    else:
+                        mes_atual = 12
+                mes_atual_index = meses_trimestre.index(mes_atual)
+                if(mes_atual_index != len(meses_trimestre)-1):
+                    mes_trimestre_anterior = meses_trimestre[mes_atual_index]
+                    ano_trimestre_anterior = ano_atual
+                else:
+                    mes_trimestre_anterior = meses_trimestre[len(meses_trimestre)-1]  
+                    ano_trimestre_anterior = ano_atual-1                    
+                
+            trimestre_anterior = str(mes_trimestre_anterior).zfill(2)+'/'+str(ano_trimestre_anterior)
             
             try:
-                pib_trimestre_atual = df_pib[df_pib['Trimestre']==trimestre_atual].PIB.item()
-                pib_trimestre_anterior = df_pib[df_pib['Trimestre']==trimestre_anterior].PIB.item()
-                
-                df_tributo.loc[i, 'pib_trim_atual'] = pib_trimestre_atual
-                df_tributo.loc[i, 'pib_trim_ant'] = pib_trimestre_anterior
+                pib_trimestre_anterior = df_pib[df_pib['Trimestre']==trimestre_anterior].PIB.item()  
+                df_tributo.loc[i, 'PIB_RS_MES_ANTERIOR'] = pib_trimestre_anterior
             except:
-                print('Trimeste não encontrado '+trimestre_atual)
+                print('Trimestre não encontrado '+trimestre_anterior)
           
         df_tributo = df_tributo.dropna()
+        
+        return df_tributo
+    
+    @staticmethod
+    def adiciona_pib_br(df_tributo, df_pib):
+        """ Adiciona as colunas contendo os valores do PIB do mês anterior. """
+        
+        for i in range(1, len(df_tributo)):
+            mes_atual = df_tributo.loc[i, 'ds'].month
+            ano_atual = df_tributo.loc[i, 'ds'].year
+            if(mes_atual==1):
+                mes_anterior=12
+                ano_anterior = ano_atual-1
+            else:
+                mes_anterior = mes_atual-1
+                ano_anterior = ano_atual
+                
+            mes_anterior = str(mes_anterior).zfill(2)+'/'+str(ano_anterior)
+            pib_mes_anterior = df_pib[df_pib['Data']==mes_anterior].PIB.item()                
+            df_tributo.loc[i, 'PIB_BR_MES_ANTERIOR'] = pib_mes_anterior
+            
         
         return df_tributo
     
