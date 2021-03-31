@@ -8,6 +8,8 @@
       <change afterPath="$PROJECT_DIR$/logs/scalars/validation/events.out.tfevents.1614862697.DESKTOP-F61U6U5.17776.54942.v2" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/logs/scalars/validation/events.out.tfevents.1614864811.DESKTOP-F61U6U5.17776.148080.v2" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/logs/scalars/validation/events.out.tfevents.1614866853.DESKTOP-F61U6U5.17776.240372.v2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,17 +49,6 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.pyOptions" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TCC PUC Minas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,6 +133,7 @@
       <workItem from="1614783793396" duration="1974000" />
       <workItem from="1614857597756" duration="2000" />
       <workItem from="1615413602384" duration="510000" />
+      <workItem from="1616610159726" duration="9598000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -199,7 +191,14 @@
       <option name="project" value="LOCAL" />
       <updated>1615413713208</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="...">
+      <created>1616610199912</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1616610199912</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -220,14 +219,14 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Correção no extrator da inflação" />
-    <MESSAGE value="..." />
     <MESSAGE value="Predição diária pelo Prophet" />
     <MESSAGE value="Conclusão da predição diária e das plotagens com o Prophet" />
     <MESSAGE value="Início da criação de modelo LSTM com dados &quot;univariados&quot;" />
     <MESSAGE value="Continuação da criação do modelo LSTM &quot;univariado&quot;" />
     <MESSAGE value="Continuação da criação do modelo LSTM &quot;univariado&quot; - teste com scalers" />
     <MESSAGE value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
+    <MESSAGE value="..." />
+    <option name="LAST_COMMIT_MESSAGE" value="..." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TCC_PUC_Minas$notebook_execucao.coverage" NAME="notebook_execucao Coverage Results" MODIFIED="1612126557407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />

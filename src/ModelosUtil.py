@@ -1,6 +1,7 @@
 import pandas as pd
 from pandas import to_datetime
 import numpy as np
+import datetime
 
 
 class ProphetUtil:
@@ -90,7 +91,7 @@ class ProphetUtil:
             
             try:
                 pib_trimestre_anterior = df_pib[df_pib['Trimestre']==trimestre_anterior].PIB.item()  
-                df_tributo.loc[i, 'PIB_RS_MES_ANTERIOR'] = pib_trimestre_anterior
+                df_tributo.loc[i, 'PIB_RS_TRIMESTRE_ANTERIOR'] = pib_trimestre_anterior
             except:
                 print('Trimestre não encontrado '+trimestre_anterior)
           
@@ -102,7 +103,7 @@ class ProphetUtil:
     def adiciona_pib_br(df_tributo, df_pib):
         """ Adiciona as colunas contendo os valores do PIB do mês anterior. """
         
-        for i in range(1, len(df_tributo)):
+        for i in range(1, len(df_tributo)+1):
             mes_atual = df_tributo.loc[i, 'ds'].month
             ano_atual = df_tributo.loc[i, 'ds'].year
             if(mes_atual==1):
@@ -119,6 +120,28 @@ class ProphetUtil:
         
         return df_tributo
     
+    @staticmethod
+    def adiciona_dados_emprego(df_tributo, df_emprego):
+        """ Adiciona as colunas contendo os valores de admissões e demissões do mês anterior. """
+        
+        for i in range(1, len(df_tributo)+1):            
+            mes_atual = df_tributo.loc[i, 'ds'].month
+            ano_atual = df_tributo.loc[i, 'ds'].year
+            if(mes_atual==1):
+                mes_anterior=12
+                ano_anterior = ano_atual-1
+            else:
+                mes_anterior = mes_atual-1
+                ano_anterior = ano_atual
+                
+            mes_anterior = str(mes_anterior).zfill(2)+'/'+str(ano_anterior)
+            admissoes_mes_anterior = df_emprego[df_emprego['Data']==mes_anterior].Admissoes.item()
+            demissoes_mes_anterior = df_emprego[df_emprego['Data']==mes_anterior].Demissoes.item()                
+            df_tributo.loc[i, 'ADMISSOES_MES_ANTERIOR'] = admissoes_mes_anterior
+            df_tributo.loc[i, 'DEMISSOES_MES_ANTERIOR'] = demissoes_mes_anterior
+            
+        return df_tributo
+    
 
 class LSTMUtil:
     def __init__(self):
@@ -130,11 +153,16 @@ class LSTMUtil:
         dia = df[nome_coluna_data].dt.day
         mes = df[nome_coluna_data].dt.month
         ano = df[nome_coluna_data].dt.year
+        dia_semana = df[nome_coluna_data].dt.dayofweek
 
-        df = df.drop('Tributo', axis=1)
+        try:
+            df = df.drop('Tributo', axis=1)
+        except:
+            pass
         df.insert(loc=0, column='Ano', value=ano)
         df.insert(loc=0, column='Mes', value=mes)
         df.insert(loc=0, column='Dia', value=dia)
+        df.insert(loc=0, column='Dia_Semana', value=dia_semana)
 
         return df
 
@@ -160,6 +188,16 @@ class LSTMUtil:
     def gera_teste_identico_prophet(df, data_inicio_teste, data_fim_teste, n_intervalos=5):
         """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
         index_teste = df[df['Data']==data_inicio_teste].index[0]-n_intervalos
+        
+        df_treino = df[:index_teste]
+        df_teste = df[index_teste:]
+
+        return df_treino, df_teste
+    
+    @staticmethod
+    def gera_teste_identico_prophet_multivariado(df, data_inicio_teste, data_fim_teste, n_intervalos=5):
+        """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
+        index_teste = df[df['ds']==data_inicio_teste].index[0]-n_intervalos
         
         df_treino = df[:index_teste]
         df_teste = df[index_teste:]

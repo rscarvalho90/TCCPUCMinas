@@ -42,7 +42,7 @@ class DownloadDados:
             colunas = linha.findall("td")
             ano_mes = str(colunas[0].text_content())
             if colunas[2].text_content() != '\xa0':
-                igpm = float(colunas[2].text_content().replace(',', '.'))
+                igpm = float(colunas[2].text_content().replace('.', '').replace(',', '.'))
                 ano = ano_mes.split('.')[0]
                 mes = ano_mes.split('.')[1]
                 df.loc[len(df)] = [mes+'/'+ano, igpm]
@@ -98,13 +98,13 @@ class DownloadDados:
         
         url_saldo_caged_antigo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid272844966=272844966&serid272844966=272844966'
         df_saldo_caged_antigo = pd.read_csv(url_saldo_caged_antigo, sep=';')
-        df_saldo_caged_antigo['Data'] = df_saldo_caged_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/01')
+        df_saldo_caged_antigo['Data'] = df_saldo_caged_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
         df_saldo_caged_antigo = df_saldo_caged_antigo.drop(df_saldo_caged_antigo.columns[2], axis=1)
         df_saldo_caged_antigo.columns = ['Data', 'Saldo']
         
         url_caged_antigo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid231410417=231410417&serid231410418=231410418'
         df_antigo = pd.read_csv(url_caged_antigo, sep=';')
-        df_antigo['Data'] = df_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/01')
+        df_antigo['Data'] = df_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
         df_antigo = df_antigo.drop(df_antigo.columns[3], axis=1)
         df_antigo.columns = ['Data', 'Admissoes', 'Demissoes']
         datas_nan = df_antigo['Data'][np.isnan(df_antigo['Demissoes'])==True] # Datas cujo valor de demissões é nan
@@ -114,7 +114,7 @@ class DownloadDados:
         
         url_caged_novo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid2096725334=2096725334&serid2096725335=2096725335'
         df_novo = pd.read_csv(url_caged_novo, sep=';')
-        df_novo['Data'] = df_novo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/01')
+        df_novo['Data'] = df_novo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
         df_novo = df_novo.drop(df_novo.columns[3], axis=1)
         df_novo.columns = ['Data', 'Admissoes', 'Demissoes']
         

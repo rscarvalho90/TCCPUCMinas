@@ -80,10 +80,10 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     plt.title(tributo)
     plt.show()
     
-    pd_datas_testes.loc[tributo+' - Prophet', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
-    pd_datas_testes.loc[tributo+' - Prophet', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
-    pd_performance.loc[tributo+' - Prophet', 'MAE'] = mae
-    pd_performance.loc[tributo+' - Prophet', 'RMSE'] = rmse
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+    pd_performance.loc[tributo+' - Prophet - Univariável', 'MAE'] = mae
+    pd_performance.loc[tributo+' - Prophet - Univariável', 'RMSE'] = rmse
 
     print('Tributo ' + tributo + ' - Início DF teste : ' + str(
         df_teste.reset_index().loc[0, 'ds']) + ' Fim DF teste : ' + str(
@@ -117,13 +117,16 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     sns.boxplot(x=df_treino['Valor']).set_title(tributo)
     plt.show()
     
-    # Faz o Label Encoder do dia e mês (apesar de dia e mês serem numéricos, o Label Encoder inicia a contagem em 0 ao invés de 1)
+    # Faz o Label Encoder do dia, dia da semana e mês (apesar de dia e mês serem numéricos, o Label Encoder inicia a contagem em 0 ao invés de 1)
     encoder_dia = LabelEncoder()
     dia_treino_enc = encoder_dia.fit_transform(df_treino['Dia'].values)
     dia_teste_enc = encoder_dia.transform(df_teste['Dia'].values)
     encoder_mes = LabelEncoder()
     mes_treino_enc = encoder_mes.fit_transform(df_treino['Mes'].values)    
     mes_teste_enc = encoder_mes.transform(df_teste['Mes'].values)
+    encoder_dia_semana = LabelEncoder()
+    dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
+    dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
     
     np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1)), axis=1)[5:]
     np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1)), axis=1)[5:]
@@ -199,10 +202,10 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     
     comparativo.loc[tributo, 'PowerTransformer'] = mae_pwr
 
-# Treina a rede neural LSTM utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
+# Treina a rede neural LSTM com única variável quantitativa utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Utiliza método que extrai o dataset de teste idêntico ao utilizado no Prophet
-    df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet(arrecad_diaria[tributo], pd_datas_testes.loc[tributo+' - Prophet', 'Inicio'], pd_datas_testes.loc[tributo+' - Prophet', 'Fim'])   
+    df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet(arrecad_diaria[tributo], pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Inicio'], pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Fim'])   
     
     print('Tributo ' + tributo + ' - Início DF teste : ' + str(
         df_teste.reset_index().loc[0, 'Data']) + ' Fim DF teste : ' + str(
@@ -217,10 +220,13 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     encoder_mes = LabelEncoder()
     mes_treino_enc = encoder_mes.fit_transform(df_treino['Mes'].values)
     mes_teste_enc = encoder_mes.transform(df_teste['Mes'].values)
+    encoder_dia_semana = LabelEncoder()
+    dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
+    dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
 
     # Concatena os valores para servirem de input para o modelo
-    np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1)), axis=1)[5:]
-    np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1)), axis=1)[5:]
+    np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1), dia_semana_treino_enc.reshape(-1, 1)), axis=1)[5:]
+    np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1), dia_semana_teste_enc.reshape(-1, 1)), axis=1)[5:]
 
     # Power Transformer (yeo-johnson)
     pwr_scaler = PowerTransformer()
@@ -234,9 +240,11 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     valor_arrecadacao_serie_temporal_lstm_treino = LSTMUtil.cria_intervalos_temporais(valor_treino_pwr)
     valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_pwr)
 
-    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo, monitor='val_loss', verbose=2,
+    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo, monitor='loss', verbose=2,
                                 save_best_only=True, save_weights_only=False,
                                 mode='auto', period=1)
+    
+    early_stopping = EarlyStopping(monitor='loss', min_delta=0.001, patience=50)
     
     %load_ext tensorboard
     %tensorboard --logdir logs/scalars
@@ -246,7 +254,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     model = LSTMUnivariada(df_treino)
     model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
-              epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback])
+              epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
 
     # Avalia a predição do test set
     pwr_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])
@@ -254,16 +262,16 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     mae = mean_absolute_error(pwr_scaler.inverse_transform(saida_teste), pwr_scaler.inverse_transform(pwr_pred))
     
     # Preenche dataframe com os valores para comparação com os resultados do Prophet
-    pd_performance.loc[tributo+' - LSTM', 'MAE'] = mae
-    pd_performance.loc[tributo+' - LSTM', 'RMSE'] = rmse
-    pd_datas_testes.loc[tributo+' - LSTM', 'Inicio'] = df_teste.reset_index().loc[5, 'Data']
-    pd_datas_testes.loc[tributo+' - LSTM', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'Data']
+    pd_performance.loc[tributo+' - LSTM - Univariável', 'MAE'] = mae
+    pd_performance.loc[tributo+' - LSTM - Univariável', 'RMSE'] = rmse
+    pd_datas_testes.loc[tributo+' - LSTM - Univariável', 'Inicio'] = df_teste.reset_index().loc[5, 'Data']
+    pd_datas_testes.loc[tributo+' - LSTM - Univariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'Data']
 
     # Plota as predições em comparação com os valores reais
     fig, (sub1) = plt.subplots(1, 1, sharex=True)
     pred, = plt.plot(df_teste[5:]['Data'], pwr_scaler.inverse_transform(pwr_pred), c='blue', label='Predito')
     real = plt.scatter(df_teste[5:]['Data'], df_teste[5:]['Valor'], s=3, c='orange')
-    plt.legend([pred, pred_sup, real],
+    plt.legend([pred, real],
                ['Predito', 'Real'],
                fontsize=8)
     fig.autofmt_xdate()
@@ -273,13 +281,150 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     plt.show()
     
 # Realiza a comparação com modelos com múltiplas variáveis quantitativas com o Prophet e LSTM, para o ICMS
+pd_prophet_icms = ProphetUtil.transforma_dataframe(pd_arrecad_diaria[pd_arrecad_diaria['Tributo']=='ICMS'], ['Data', 'Valor'])
 
 # Baixa os dados do PIB trimestral do Rio Grande do Sul (em valores atualizados) 
-pd_pib_rs = DownloadDados.download_pib_rs()
+pd_pib_rs_trimestral = DownloadDados.download_pib_rs()
+pd_pib_br_mensal = DownloadDados.download_pib_br()
+pd_pib_br_mensal = CorrigeValores.corrige_inflacao_pib(pd_pib_br_mensal, igp)
+pd_emprego_adm_dem_mensal = DownloadDados.download_dados_emprego()
 
-# Busca os dados para o ICMS e os transforma no padrão aceito pelo Prophet
-pd_prophet_icms = ProphetUtil.agrupa_dados_mensais_em_trimestrais(pd_arrecad_diaria[pd_arrecad_diaria['Tributo']=='ICMS'])
-pd_prophet_icms = ProphetUtil.transforma_dataframe(pd_prophet_icms, ['Trimestre', 'Valor'])
+# Adiciona os dados do PIB do RS(trimestre anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_pib_rs(pd_prophet_icms, pd_pib_rs_trimestral)
+# Adiciona os dados do PIB do Brasil(estimativa mês anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_pib_br(pd_prophet_icms, pd_pib_br_mensal)
+# Adiciona os dados de emprego do Brasil(mês anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_dados_emprego(pd_prophet_icms, pd_emprego_adm_dem_mensal)
 
-# Adiciona os dados do PIB (trimestre atual e anterior) ao dataframe, sendo adicionadas, portanto, mais duas variáveis quantitativas
-pd_prophet_icms = ProphetUtil.adiciona_pib(pd_prophet_icms, pd_pib_rs)
+# Cria modelo com múltiplas variáveis quantitativas utilizando o Facebook Prophet
+prophet = Prophet(daily_seasonality=True)
+pd_prophet = pd_prophet_icms
+df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
+df_teste.reset_index(drop=True, inplace=True)
+prophet.add_regressor('ADMISSOES_MES_ANTERIOR')
+prophet.add_regressor('DEMISSOES_MES_ANTERIOR')
+prophet.add_regressor('PIB_BR_MES_ANTERIOR')
+prophet.add_regressor('PIB_RS_TRIMESTRE_ANTERIOR')
+prophet.fit(df_treino)
+predito = prophet.predict(pd.DataFrame(df_teste[['ds', 'ADMISSOES_MES_ANTERIOR', 'DEMISSOES_MES_ANTERIOR', 'PIB_BR_MES_ANTERIOR', 'PIB_RS_TRIMESTRE_ANTERIOR']]))
+
+# Grava os erros
+rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+
+# Plota as predições
+fig, (sub1) = plt.subplots(1, 1, sharex=True)
+sub1.fill_between(df_teste['ds'], predito['yhat_upper'], predito['yhat_lower'], facecolor='dodgerblue')
+pred, = plt.plot(df_teste['ds'], predito['yhat'], c='blue', label='Predito')
+pred_sup, = plt.plot(df_teste['ds'], predito['yhat_upper'], c='royalblue')
+pred_inf, = plt.plot(df_teste['ds'], predito['yhat_lower'], c='royalblue')
+real = plt.scatter(df_teste['ds'], df_teste['y'], s=3, c='orange')
+plt.legend([pred, pred_sup, real],
+           ['Predito', 'Predito (limites superior e inferior)', 'Real'],
+           fontsize=8)
+fig.autofmt_xdate()
+plt.xlabel('Data')
+plt.ylabel('Valor (R$)')
+plt.title('ICMS - Prophet - Múltiplas variáveis quantitativas')
+plt.show()
+
+pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+pd_performance.loc['ICMS - Prophet - Multivariável', 'MAE'] = mae
+pd_performance.loc['ICMS - Prophet - Multivariável', 'RMSE'] = rmse
+
+# Treina a rede neural LSTM com múltiplas variáveis quantitativas utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
+from src.ModelosNN import LSTMMultivariada
+
+# Utiliza método que extrai o dataset de teste idêntico ao utilizado no Prophet
+df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet_multivariado(pd_prophet_icms, pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio'], pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Fim'])   
+
+df_treino = LSTMUtil.transforma_dataframe(df_treino, 'ds')
+df_teste = LSTMUtil.transforma_dataframe(df_teste, 'ds')
+
+# Faz o Label Encoder do dia e mês (apesar de dia e mês serem numéricos, o Label Encoder inicia a contagem em 0 ao invés de 1)
+encoder_dia = LabelEncoder()
+dia_treino_enc = encoder_dia.fit_transform(df_treino['Dia'].values)
+dia_teste_enc = encoder_dia.transform(df_teste['Dia'].values)
+encoder_mes = LabelEncoder()
+mes_treino_enc = encoder_mes.fit_transform(df_treino['Mes'].values)
+mes_teste_enc = encoder_mes.transform(df_teste['Mes'].values)
+encoder_dia_semana = LabelEncoder()
+dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
+dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
+
+# Faz a transformação Power Transformer (yeo-johnson) para dados do PIB trimestral do RS
+pwr_scaler_pib_rs = PowerTransformer()
+pib_rs_treino_pwr = pwr_scaler_pib_rs.fit_transform(df_treino['PIB_RS_TRIMESTRE_ANTERIOR'].values.reshape(-1, 1))
+pib_rs_teste_pwr = pwr_scaler_pib_rs.transform(df_teste['PIB_RS_TRIMESTRE_ANTERIOR'].values.reshape(-1, 1))
+
+# Faz a transformação Power Transformer (yeo-johnson) para dados do PIB mensal do Brasil
+pwr_scaler_pib_br = PowerTransformer()
+pib_br_treino_pwr = pwr_scaler_pib_br.fit_transform(df_treino['PIB_BR_MES_ANTERIOR'].values.reshape(-1, 1))
+pib_br_teste_pwr = pwr_scaler_pib_br.transform(df_teste['PIB_BR_MES_ANTERIOR'].values.reshape(-1, 1))
+
+# Faz a transformação Power Transformer (yeo-johnson) para dados de admissões
+pwr_scaler_admissoes = PowerTransformer()
+admissoes_treino_pwr =pwr_scaler_admissoes.fit_transform(df_treino['ADMISSOES_MES_ANTERIOR'].values.reshape(-1, 1))
+admissoes_teste_pwr = pwr_scaler_admissoes.transform(df_teste['ADMISSOES_MES_ANTERIOR'].values.reshape(-1, 1))
+
+# Faz a transformação Power Transformer (yeo-johnson) para dados de demissõess
+pwr_scaler_demissoes = PowerTransformer()
+demissoes_treino_pwr =pwr_scaler_demissoes.fit_transform(df_treino['DEMISSOES_MES_ANTERIOR'].values.reshape(-1, 1))
+demissoes_teste_pwr = pwr_scaler_demissoes.transform(df_teste['DEMISSOES_MES_ANTERIOR'].values.reshape(-1, 1))
+
+# Concatena os valores para servirem de input para o modelo
+np_dia_mes_pib_emprego_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1), dia_semana_treino_enc.reshape(-1, 1), pib_rs_treino_pwr.reshape(-1, 1), pib_br_treino_pwr.reshape(-1, 1), admissoes_treino_pwr.reshape(-1, 1), demissoes_treino_pwr.reshape(-1, 1)), axis=1)[5:]
+np_dia_mes_pib_emprego_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1), dia_semana_teste_enc.reshape(-1, 1), pib_rs_teste_pwr.reshape(-1, 1), pib_br_teste_pwr.reshape(-1, 1), admissoes_teste_pwr.reshape(-1, 1), demissoes_teste_pwr.reshape(-1, 1)), axis=1)[5:]
+
+# Faz a transformação Power Transformer (yeo-johnson) para dados da arrecadação
+pwr_scaler_arrecad = PowerTransformer()
+arrecad_treino_pwr = pwr_scaler_arrecad.fit_transform(df_treino['y'].values.reshape(-1, 1))
+arrecad_teste_pwr = pwr_scaler_arrecad.transform(df_teste['y'].values.reshape(-1, 1))
+
+saida_treino = arrecad_treino_pwr[5:]
+saida_teste = arrecad_teste_pwr[5:]
+
+# Cria intervalos temporais com 3 dimensões para servirem de input à rede LSTM
+valor_arrecadacao_serie_temporal_lstm_treino = LSTMUtil.cria_intervalos_temporais(arrecad_treino_pwr)
+valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(arrecad_teste_pwr)
+
+checkpoint = ModelCheckpoint('checkpoint_regressor_ICMS_multivariado', monitor='loss', verbose=2,
+                            save_best_only=True, save_weights_only=False,
+                            mode='auto', period=1)
+
+early_stopping = EarlyStopping(monitor='loss', min_delta=0.001, patience=50)
+
+%load_ext tensorboard
+%tensorboard --logdir logs/scalars
+logdir = "logs/scalars/"
+tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
+
+model = LSTMMultivariada(df_treino)
+model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
+model.fit([np_dia_mes_pib_emprego_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_pib_emprego_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
+          epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
+
+# Avalia a predição do test set
+pwr_pred = model.predict([np_dia_mes_pib_emprego_teste, valor_arrecadacao_serie_temporal_lstm_teste])
+rmse = mean_squared_error(pwr_scaler_arrecad.inverse_transform(saida_teste), pwr_scaler_arrecad.inverse_transform(pwr_pred)) ** (1 / 2)
+mae = mean_absolute_error(pwr_scaler_arrecad.inverse_transform(saida_teste), pwr_scaler_arrecad.inverse_transform(pwr_pred))
+
+# Preenche dataframe com os valores para comparação com os resultados do Prophet
+pd_performance.loc['ICMS - LSTM - Multivariável', 'MAE'] = mae
+pd_performance.loc['ICMS - LSTM - Multivariável', 'RMSE'] = rmse
+pd_datas_testes.loc['ICMS - LSTM - Multivariável', 'Inicio'] = df_teste.reset_index().loc[5, 'ds']
+pd_datas_testes.loc['ICMS - LSTM - Multivariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'ds']
+
+# Plota as predições em comparação com os valores reais
+fig, (sub1) = plt.subplots(1, 1, sharex=True)
+pred, = plt.plot(df_teste[5:]['ds'], pwr_scaler_arrecad.inverse_transform(pwr_pred), c='blue', label='Predito')
+real = plt.scatter(df_teste[5:]['ds'], df_teste[5:]['y'], s=3, c='orange')
+plt.legend([pred, real],
+           ['Predito', 'Real'],
+           fontsize=8)
+fig.autofmt_xdate()
+plt.xlabel('Data')
+plt.ylabel('Valor (R$)')
+plt.title('ICMS')
+plt.show()
