@@ -187,19 +187,20 @@ class LSTMUtil:
     @staticmethod
     def gera_teste_identico_prophet(df, data_inicio_teste, data_fim_teste, n_intervalos=5):
         """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
-        index_teste = df[df['Data']==data_inicio_teste].index[0]-n_intervalos
+        index_inicio_teste = df[df['Data']==data_inicio_teste].index[0]-n_intervalos
+        index_fim_teste = df[df['Data']==data_fim_teste].index[0]
         
-        df_treino = df[:index_teste]
-        df_teste = df[index_teste:]
+        df_treino = df[:index_inicio_teste]
+        df_teste = df[index_inicio_teste:index_fim_teste+1]
 
         return df_treino, df_teste
     
     @staticmethod
-    def gera_teste_identico_prophet_multivariado(df, data_inicio_teste, data_fim_teste, n_intervalos=5):
+    def gera_teste_identico_prophet_multivariado(df, data_inicio_teste, data_fim_teste, n_intervalos=5):        
         """ Retorna o dois dataframes com o set de treinamento e o set de testes. """
-        index_teste = df[df['ds']==data_inicio_teste].index[0]-n_intervalos
+        index_inicio_teste = df[df['ds']==data_inicio_teste].index[0]-n_intervalos-1
         
-        df_treino = df[:index_teste]
-        df_teste = df[index_teste:]
+        df_treino = df[:index_inicio_teste]
+        df_teste = df[index_inicio_teste:]
 
         return df_treino, df_teste
