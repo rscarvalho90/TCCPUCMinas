@@ -49,6 +49,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import StandardScaler, RobustScaler, PowerTransformer, LabelEncoder
 
 pd_datas_testes = pd.DataFrame(columns=['Inicio', 'Fim'])
+pd_datas_treinos = pd.DataFrame(columns=['Inicio', 'Fim'])
 pd_performance = pd.DataFrame(columns=['MAE', 'RMSE'])
 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
@@ -82,6 +83,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     
     pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
     pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
     pd_performance.loc[tributo+' - Prophet - Univariável', 'MAE'] = mae
     pd_performance.loc[tributo+' - Prophet - Univariável', 'RMSE'] = rmse
 
@@ -96,6 +99,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 from src.ModelosUtil import LSTMUtil
 from src.ModelosNN import LSTMUnivariada
 import tensorflow.keras.optimizers as ko
+from tensorflow import keras
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 
 comparativo = pd.DataFrame(columns=['StandardScaler', 'RobustScaler', 'PowerTransformer'])
@@ -127,9 +131,12 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     encoder_dia_semana = LabelEncoder()
     dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
     dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
+    encoder_dia_semana = LabelEncoder()
+    dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
+    dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
     
-    np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1)), axis=1)[5:]
-    np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1)), axis=1)[5:]
+    np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1), dia_semana_treino_enc.reshape(-1, 1)), axis=1)[5:]
+    np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1), dia_semana_teste_enc.reshape(-1, 1)), axis=1)[5:]
     
     # Faz os testes com diversos "scalers" para verificar o com menor erro   
 
@@ -240,7 +247,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     valor_arrecadacao_serie_temporal_lstm_treino = LSTMUtil.cria_intervalos_temporais(valor_treino_pwr)
     valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_pwr)
 
-    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo, monitor='loss', verbose=2,
+    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_univariado.hdf5', monitor='loss', verbose=2,
                                 save_best_only=True, save_weights_only=False,
                                 mode='auto', period=1)
     
@@ -255,6 +262,9 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
               epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
+    
+    # Carrega o melhor modelo salvo pelo Checkpoint
+    model.load_weights('checkpoint_regressor_'+tributo+'_univariado.hdf5')
 
     # Avalia a predição do test set
     pwr_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])
@@ -266,6 +276,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     pd_performance.loc[tributo+' - LSTM - Univariável', 'RMSE'] = rmse
     pd_datas_testes.loc[tributo+' - LSTM - Univariável', 'Inicio'] = df_teste.reset_index().loc[5, 'Data']
     pd_datas_testes.loc[tributo+' - LSTM - Univariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'Data']
+    pd_datas_treinos.loc[tributo+' - LSTM - Univariável', 'Inicio'] = df_treino.reset_index().loc[5, 'Data']
+    pd_datas_treinos.loc[tributo+' - LSTM - Univariável', 'Fim'] = df_treino.reset_index().loc[len(df_treino)-1, 'Data']
 
     # Plota as predições em comparação com os valores reais
     fig, (sub1) = plt.subplots(1, 1, sharex=True)
@@ -325,11 +337,13 @@ plt.legend([pred, pred_sup, real],
 fig.autofmt_xdate()
 plt.xlabel('Data')
 plt.ylabel('Valor (R$)')
-plt.title('ICMS - Prophet - Múltiplas variáveis quantitativas')
+plt.title('ICMS - Prophet - Múltiplas Variáveis Quantitativas')
 plt.show()
 
 pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
 pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Multivariável', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Multivariável', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
 pd_performance.loc['ICMS - Prophet - Multivariável', 'MAE'] = mae
 pd_performance.loc['ICMS - Prophet - Multivariável', 'RMSE'] = rmse
 
@@ -389,7 +403,7 @@ saida_teste = arrecad_teste_pwr[5:]
 valor_arrecadacao_serie_temporal_lstm_treino = LSTMUtil.cria_intervalos_temporais(arrecad_treino_pwr)
 valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(arrecad_teste_pwr)
 
-checkpoint = ModelCheckpoint('checkpoint_regressor_ICMS_multivariado', monitor='loss', verbose=2,
+checkpoint = ModelCheckpoint('checkpoint_regressor_ICMS_multivariado.hdf5', monitor='loss', verbose=2,
                             save_best_only=True, save_weights_only=False,
                             mode='auto', period=1)
 
@@ -398,12 +412,15 @@ early_stopping = EarlyStopping(monitor='loss', min_delta=0.001, patience=50)
 %load_ext tensorboard
 %tensorboard --logdir logs/scalars
 logdir = "logs/scalars/"
-tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
+tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000)
 
 model = LSTMMultivariada(df_treino)
 model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
 model.fit([np_dia_mes_pib_emprego_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_pib_emprego_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
           epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
+
+# Carrega o melhor modelo salvo pelo Checkpoint
+model.load_weights('checkpoint_regressor_ICMS_multivariado.hdf5')
 
 # Avalia a predição do test set
 pwr_pred = model.predict([np_dia_mes_pib_emprego_teste, valor_arrecadacao_serie_temporal_lstm_teste])
@@ -415,6 +432,8 @@ pd_performance.loc['ICMS - LSTM - Multivariável', 'MAE'] = mae
 pd_performance.loc['ICMS - LSTM - Multivariável', 'RMSE'] = rmse
 pd_datas_testes.loc['ICMS - LSTM - Multivariável', 'Inicio'] = df_teste.reset_index().loc[5, 'ds']
 pd_datas_testes.loc['ICMS - LSTM - Multivariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'ds']
+pd_datas_treinos.loc['ICMS - LSTM - Multivariável', 'Inicio'] = df_treino.reset_index().loc[5, 'ds']
+pd_datas_treinos.loc['ICMS - LSTM - Multivariável', 'Fim'] = df_treino.reset_index().loc[len(df_treino)-1, 'ds']
 
 # Plota as predições em comparação com os valores reais
 fig, (sub1) = plt.subplots(1, 1, sharex=True)
@@ -427,4 +446,123 @@ fig.autofmt_xdate()
 plt.xlabel('Data')
 plt.ylabel('Valor (R$)')
 plt.title('ICMS')
+plt.show()
+
+''' Para fins de comparação, executa treino e teste nos modelos com única variável quantitativa
+nos mesmos períodos com mútliplas variáveis quantitativas.'''
+
+# Modelo do Prophet
+
+prophet = Prophet(daily_seasonality=True)
+pd_prophet = pd_prophet_icms
+df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
+df_teste.reset_index(drop=True, inplace=True)
+prophet.fit(df_treino)
+predito = prophet.predict(pd.DataFrame(df_teste['ds']))
+
+# Grava os erros
+rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+
+# Plota as predições
+fig, (sub1) = plt.subplots(1, 1, sharex=True)
+sub1.fill_between(df_teste['ds'], predito['yhat_upper'], predito['yhat_lower'], facecolor='dodgerblue')
+pred, = plt.plot(df_teste['ds'], predito['yhat'], c='blue', label='Predito')
+pred_sup, = plt.plot(df_teste['ds'], predito['yhat_upper'], c='royalblue')
+pred_inf, = plt.plot(df_teste['ds'], predito['yhat_lower'], c='royalblue')
+real = plt.scatter(df_teste['ds'], df_teste['y'], s=3, c='orange')
+plt.legend([pred, pred_sup, real],
+           ['Predito', 'Predito (limites superior e inferior)', 'Real'],
+           fontsize=8)
+fig.autofmt_xdate()
+plt.xlabel('Data')
+plt.ylabel('Valor (R$)')
+plt.title('ICMS - Prophet - Única Variável Quantitativa - Datas Idênticas ao Modelo com Múltiplas Variáveis Quantitativas')
+plt.show()
+
+pd_datas_testes.loc['ICMS - Prophet - Univariável (2)', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+pd_datas_testes.loc['ICMS - Prophet - Univariável (2)', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Univariável (2)', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Univariável (2)', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
+pd_performance.loc['ICMS - Prophet - Univariável (2)', 'MAE'] = mae
+pd_performance.loc['ICMS - Prophet - Univariável (2)', 'RMSE'] = rmse
+
+# Modelo LSTM
+
+# Utiliza método que extrai o dataset de teste idêntico ao utilizado no Prophet
+df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet(arrecad_diaria['ICMS'], pd_datas_testes.loc['ICMS - Prophet - Univariável (2)', 'Inicio'], pd_datas_testes.loc['ICMS - Prophet - Univariável (2)', 'Fim'])
+
+df_treino = LSTMUtil.transforma_dataframe(df_treino, 'Data')
+df_teste = LSTMUtil.transforma_dataframe(df_teste, 'Data')
+
+# Faz o Label Encoder do dia e mês (apesar de dia e mês serem numéricos, o Label Encoder inicia a contagem em 0 ao invés de 1)
+encoder_dia = LabelEncoder()
+dia_treino_enc = encoder_dia.fit_transform(df_treino['Dia'].values)
+dia_teste_enc = encoder_dia.transform(df_teste['Dia'].values)
+encoder_mes = LabelEncoder()
+mes_treino_enc = encoder_mes.fit_transform(df_treino['Mes'].values)
+mes_teste_enc = encoder_mes.transform(df_teste['Mes'].values)
+encoder_dia_semana = LabelEncoder()
+dia_semana_treino_enc = encoder_dia_semana.fit_transform(df_treino['Dia_Semana'].values)    
+dia_semana_teste_enc = encoder_dia_semana.transform(df_teste['Dia_Semana'].values)
+
+# Concatena os valores para servirem de input para o modelo
+np_dia_mes_treino = np.concatenate((dia_treino_enc.reshape(-1, 1), mes_treino_enc.reshape(-1, 1), dia_semana_treino_enc.reshape(-1, 1)), axis=1)[5:]
+np_dia_mes_teste = np.concatenate((dia_teste_enc.reshape(-1, 1), mes_teste_enc.reshape(-1, 1), dia_semana_teste_enc.reshape(-1, 1)), axis=1)[5:]
+
+# Power Transformer (yeo-johnson)
+pwr_scaler = PowerTransformer()
+valor_treino_pwr = pwr_scaler.fit_transform(df_treino['Valor'].values.reshape(-1, 1))
+valor_teste_pwr = pwr_scaler.transform(df_teste['Valor'].values.reshape(-1, 1))
+
+saida_treino = valor_treino_pwr[5:]
+saida_teste = valor_teste_pwr[5:]
+
+# Cria intervalos temporais com 3 dimensões para servirem de input à rede LSTM
+valor_arrecadacao_serie_temporal_lstm_treino = LSTMUtil.cria_intervalos_temporais(valor_treino_pwr)
+valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_pwr)
+
+checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_univariado(2).hdf5', monitor='loss', verbose=2,
+                            save_best_only=True, save_weights_only=False,
+                            mode='auto', period=1)
+
+early_stopping = EarlyStopping(monitor='loss', min_delta=0.001, patience=50)
+
+%load_ext tensorboard
+%tensorboard --logdir logs/scalars
+logdir = "logs/scalars/"
+tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
+
+model = LSTMUnivariada(df_treino)
+model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
+model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
+          epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
+
+# Carrega o melhor modelo salvo pelo Checkpoint
+model.load_weights('checkpoint_regressor_'+tributo+'_univariado(2).hdf5')
+
+# Avalia a predição do test set
+pwr_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])
+rmse = mean_squared_error(pwr_scaler.inverse_transform(saida_teste), pwr_scaler.inverse_transform(pwr_pred)) ** (1 / 2)
+mae = mean_absolute_error(pwr_scaler.inverse_transform(saida_teste), pwr_scaler.inverse_transform(pwr_pred))
+
+# Preenche dataframe com os valores para comparação com os resultados do Prophet
+pd_performance.loc['ICMS - LSTM - Univariável (2)', 'MAE'] = mae
+pd_performance.loc['ICMS - LSTM - Univariável (2)', 'RMSE'] = rmse
+pd_datas_testes.loc['ICMS - LSTM - Univariável (2)', 'Inicio'] = df_teste.reset_index().loc[5, 'Data']
+pd_datas_testes.loc['ICMS - LSTM - Univariável (2)', 'Fim'] = df_teste.reset_index().loc[len(df_teste)-1, 'Data']
+pd_datas_treinos.loc['ICMS - LSTM - Univariável (2)', 'Inicio'] = df_treino.reset_index().loc[5, 'Data']
+pd_datas_treinos.loc['ICMS - LSTM - Univariável (2)', 'Fim'] = df_treino.reset_index().loc[len(df_treino)-1, 'Data']
+
+# Plota as predições em comparação com os valores reais
+fig, (sub1) = plt.subplots(1, 1, sharex=True)
+pred, = plt.plot(df_teste[5:]['Data'], pwr_scaler.inverse_transform(pwr_pred), c='blue', label='Predito')
+real = plt.scatter(df_teste[5:]['Data'], df_teste[5:]['Valor'], s=3, c='orange')
+plt.legend([pred, real],
+           ['Predito', 'Real'],
+           fontsize=8)
+fig.autofmt_xdate()
+plt.xlabel('Data')
+plt.ylabel('Valor (R$)')
+plt.title('ICMS - LSTM - Única Variável Quantitativa - Datas Idênticas ao Modelo com Múltiplas Variáveis Quantitativas')
 plt.show()
