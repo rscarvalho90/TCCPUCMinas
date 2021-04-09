@@ -10,8 +10,6 @@ class CorrigeValores:
         """ Dado um dataframe com os números-índice para correção e outro dataframe com os valores de tributo,
         corrige estes trazendo-os ao valor presente da última data disponível no dataframe de valores de tributo."""
 
-        data_util = DataUtil()
-
         ultimo_mes_inflacao = pd_inflacao.loc[0, 'Mes/Ano']
         ultimo_numero_indice = pd_inflacao.loc[0, 'Numero Indice']
 
@@ -29,12 +27,11 @@ class CorrigeValores:
             pd_tributo.loc[indice, 'Valor'] = pd_tributo.loc[indice, 'Valor'] * ultimo_numero_indice / numero_indice_atual
 
         return pd_tributo
-    
+
+    @staticmethod
     def corrige_inflacao_pib(pd_pib, pd_inflacao):
         """ Dado um dataframe com os números-índice para correção e outro dataframe com os valores do PIB Nominal,
         corrige estes trazendo-os ao valor presente da última data disponível no dataframe de valores de PIB."""
-
-        data_util = DataUtil()
 
         ultimo_mes_inflacao = pd_inflacao.loc[0, 'Mes/Ano']
         ultimo_numero_indice = pd_inflacao.loc[0, 'Numero Indice']
@@ -43,7 +40,7 @@ class CorrigeValores:
             mes_atual = linha['Data']
 
             ''' Nos meses anteriores à última data publicada para a inflação, o valor do tributo será
-            multiplicado pela razão entre o útlimo número-índice e o número índice correspondente ao mês seguinte ao do
+            multiplicado pela razão entre o último número-índice e o número índice correspondente ao mês seguinte ao do
             tributo. '''
             if datetime.strptime(mes_atual, '%m/%Y').date() < datetime.strptime(ultimo_mes_inflacao, '%m/%Y').date():
                 numero_indice_atual = pd_inflacao[pd_inflacao['Mes/Ano'] == mes_atual]['Numero Indice'].item()

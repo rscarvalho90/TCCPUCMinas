@@ -11,11 +11,16 @@ dd = DownloadDados()
 pd_arrecad_diaria = DownloadDados.download_arrecadacao_sefaz_rs()
 
 arrecad_diaria = {}
+pd.set_option('display.float_format', lambda x: '%.5f' % x)
 
 # Gera dataframes de arrecadação diária para cada tributo, sem a correção pela inflação
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     arrecad_diaria[tributo] = pd_arrecad_diaria[pd_arrecad_diaria['Tributo'] == tributo].reset_index()
     arrecad_diaria[tributo] = arrecad_diaria[tributo].drop(['index'], axis=1)
+    
+for tributo in pd_arrecad_diaria['Tributo'].unique():
+    print(tributo)
+    print(arrecad_diaria[tributo]['Valor'].describe())
 
 # Plota os gráficos das séries temporais dos tributos, sem a correção pela inflação
 for tributo in pd_arrecad_diaria['Tributo'].unique():
@@ -35,6 +40,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 # Plota os gráficos das séries temporais dos tributos, após a correção pela inflação
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     sns.scatterplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor'], size=3, legend=False).set_title(tributo)
+    plt.show()
+    sns.boxplot(x=arrecad_diaria[tributo]['Valor']).set_title(tributo)
     plt.show()
 
 # Imprime a descrição dos dados    

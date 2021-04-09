@@ -96,22 +96,25 @@ class DownloadDados:
     def download_dados_emprego():
         """ Baixa os dados de emprego do IPEA Data """
         
+        # Baixa os dados de saldo de empregos para preencher campos que vierem sem valores válidos
         url_saldo_caged_antigo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid272844966=272844966&serid272844966=272844966'
         df_saldo_caged_antigo = pd.read_csv(url_saldo_caged_antigo, sep=';')
         df_saldo_caged_antigo['Data'] = df_saldo_caged_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
         df_saldo_caged_antigo = df_saldo_caged_antigo.drop(df_saldo_caged_antigo.columns[2], axis=1)
         df_saldo_caged_antigo.columns = ['Data', 'Saldo']
         
+        # Dados antigos do CAGED (Admissões e Demissões)
         url_caged_antigo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid231410417=231410417&serid231410418=231410418'
         df_antigo = pd.read_csv(url_caged_antigo, sep=';')
         df_antigo['Data'] = df_antigo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
         df_antigo = df_antigo.drop(df_antigo.columns[3], axis=1)
         df_antigo.columns = ['Data', 'Admissoes', 'Demissoes']
-        datas_nan = df_antigo['Data'][np.isnan(df_antigo['Demissoes'])==True] # Datas cujo valor de demissões é nan
-        saldos_nan = df_saldo_caged_antigo[df_saldo_caged_antigo['Data'].isin(pd.DataFrame(datas_nan)['Data'])] # Saldos em datas cujo valor de demissões é nan
+        datas_nan = df_antigo['Data'][np.isnan(df_antigo['Demissoes'])==True] # Datas cujo valor de demissões é NaN
+        saldos_nan = df_saldo_caged_antigo[df_saldo_caged_antigo['Data'].isin(pd.DataFrame(datas_nan)['Data'])] # Saldos em datas cujo valor de demissões é NaN
         df_antigo['Demissoes'][np.isnan(df_antigo['Demissoes'])==True] = df_antigo['Admissoes'][np.isnan(df_antigo['Demissoes'])==True]-saldos_nan['Saldo']        
         df_antigo['Demissoes'] = df_antigo['Demissoes'].astype(int)
         
+        # Dados novos do CAGED (Admissões e Demissões)
         url_caged_novo = 'http://www.ipeadata.gov.br/ExibeSerie.aspx?oper=exportCSVBr&serid2096725334=2096725334&serid2096725335=2096725335'
         df_novo = pd.read_csv(url_caged_novo, sep=';')
         df_novo['Data'] = df_novo['Data'].astype(str).str.replace('.', '/').replace('0000', '').str.replace('/1$', '/10')
