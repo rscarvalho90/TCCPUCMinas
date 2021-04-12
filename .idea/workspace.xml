@@ -5,18 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas">
-      <change afterPath="$PROJECT_DIR$/ICMS Nominal.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ICMS Real.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IPVA Nominal.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/IPVA Real.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ITCD Nominal.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ITCD Real.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - ICMS - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - ICMS - Univariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - IPVA - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - IPVA - Univariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - ITCD - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Componentes Prophet - ITCD - Univariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ICMS - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ICMS - Univariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - IPVA - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - IPVA - Univariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ITCD - Univariado - Com remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ITCD - Univariado - Sem remoção de outliers.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_multivariado.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado(2).hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/~$TCC.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint" beforeDir="false" />
@@ -26,9 +32,8 @@
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_IPVA.index" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD.data-00000-of-00001" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD.index" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DownloadDados.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DownloadDados.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Util.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/~$TCC.docx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +197,7 @@
       <workItem from="1617891833864" duration="860000" />
       <workItem from="1617892714622" duration="494000" />
       <workItem from="1617893238168" duration="53000" />
-      <workItem from="1617893304059" duration="2314000" />
+      <workItem from="1617893304059" duration="5438000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -271,7 +276,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617311958203</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas">
+      <created>1617999463655</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1617999463655</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -297,11 +309,11 @@
     <MESSAGE value="Início da criação de modelo LSTM com dados &quot;univariados&quot;" />
     <MESSAGE value="Continuação da criação do modelo LSTM &quot;univariado&quot;" />
     <MESSAGE value="Continuação da criação do modelo LSTM &quot;univariado&quot; - teste com scalers" />
-    <MESSAGE value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
     <MESSAGE value="..." />
     <MESSAGE value="Criação de modelo do Prophet e LSTM para entrada com múltiplas variáveis quantitativas" />
     <MESSAGE value="Conclusão arquivo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Conclusão arquivo" />
+    <MESSAGE value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

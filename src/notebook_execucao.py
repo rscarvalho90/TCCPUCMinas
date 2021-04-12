@@ -58,12 +58,22 @@ from sklearn.preprocessing import StandardScaler, RobustScaler, PowerTransformer
 pd_datas_testes = pd.DataFrame(columns=['Inicio', 'Fim'])
 pd_datas_treinos = pd.DataFrame(columns=['Inicio', 'Fim'])
 pd_performance = pd.DataFrame(columns=['MAE', 'RMSE'])
+pd_stats = pd.DataFrame(columns=['dp'])
 
+# Predição com a remoção de 'outliers'
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Calcula os valores em termos absolutos
-    prophet = Prophet(daily_seasonality=True)
+    prophet = Prophet(daily_seasonality=True)    
+     
     pd_prophet = ProphetUtil.transforma_dataframe(arrecad_diaria[tributo], ['Data', 'Valor'])
     df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)
+    
+    # Remove os 'outliers' do dataframe de treino
+    primeiro_quartil = df_treino['y'].quantile(.25)
+    terceiro_quartil = df_treino['y'].quantile(.75)
+    desvio_quartil = (terceiro_quartil-primeiro_quartil)/2
+    df_treino = df_treino[(df_treino['y']<terceiro_quartil+1.5*desvio_quartil) & (df_treino['y']>primeiro_quartil-1.5*desvio_quartil)]
+   
     df_teste.reset_index(drop=True, inplace=True)
     prophet.fit(df_treino)
     predito = prophet.predict(pd.DataFrame(df_teste['ds']))
@@ -88,12 +98,66 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     plt.title(tributo)
     plt.show()
     
-    pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
-    pd_datas_testes.loc[tributo+' - Prophet - Univariável', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
-    pd_datas_treinos.loc[tributo+' - Prophet - Univariável', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
-    pd_datas_treinos.loc[tributo+' - Prophet - Univariável', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
-    pd_performance.loc[tributo+' - Prophet - Univariável', 'MAE'] = mae
-    pd_performance.loc[tributo+' - Prophet - Univariável', 'RMSE'] = rmse
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
+    pd_performance.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'MAE'] = mae
+    pd_performance.loc[tributo+' - Prophet - Univariável - Com Remoção de Outliers', 'RMSE'] = rmse
+    pd_stats.loc[tributo+' - DP', 'dp'] = df_teste['y'].std()
+    
+    # Plota os componentes    
+    prophet.plot_components(predito)
+
+    print('Tributo ' + tributo + ' - Início DF teste : ' + str(
+        df_teste.reset_index().loc[0, 'ds']) + ' Fim DF teste : ' + str(
+        df_teste.reset_index().loc[len(df_teste) - 1, 'ds']))
+    print(
+        'Para o tributo ' + tributo + ' o MAE foi de ' + str(mae) + '  e o RMSE foi de ' + str(
+            rmse))
+    
+# Predição sem a remoção de 'outliers'
+for tributo in pd_arrecad_diaria['Tributo'].unique():
+    # Calcula os valores em termos absolutos
+    prophet = Prophet(daily_seasonality=True)    
+     
+    pd_prophet = ProphetUtil.transforma_dataframe(arrecad_diaria[tributo], ['Data', 'Valor'])
+    df_treino, df_teste = ProphetUtil.divide_treino_teste(pd_prophet)    
+    
+    df_teste.reset_index(drop=True, inplace=True)
+    prophet.fit(df_treino)
+    predito = prophet.predict(pd.DataFrame(df_teste['ds']))
+    
+    # Grava os erros
+    rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+    mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+    
+    # Plota as predições
+    fig, (sub1) = plt.subplots(1, 1, sharex=True)
+    sub1.fill_between(df_teste['ds'], predito['yhat_upper'], predito['yhat_lower'], facecolor='dodgerblue')
+    pred, = plt.plot(df_teste['ds'], predito['yhat'], c='blue', label='Predito')
+    pred_sup, = plt.plot(df_teste['ds'], predito['yhat_upper'], c='royalblue')
+    pred_inf, = plt.plot(df_teste['ds'], predito['yhat_lower'], c='royalblue')
+    real = plt.scatter(df_teste['ds'], df_teste['y'], s=3, c='orange')
+    plt.legend([pred, pred_sup, real],
+               ['Predito', 'Predito (limites superior e inferior)', 'Real'],
+               fontsize=8)
+    fig.autofmt_xdate()
+    plt.xlabel('Data')
+    plt.ylabel('Valor (R$)')
+    plt.title(tributo)
+    plt.show()
+    
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+    pd_datas_testes.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+    pd_datas_treinos.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
+    pd_performance.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'MAE'] = mae
+    pd_performance.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'RMSE'] = rmse
+    pd_stats.loc[tributo+' - DP', 'dp'] = df_teste['y'].std()
+    
+    # Plota os componentes    
+    prophet.plot_components(predito)
 
     print('Tributo ' + tributo + ' - Início DF teste : ' + str(
         df_teste.reset_index().loc[0, 'ds']) + ' Fim DF teste : ' + str(
