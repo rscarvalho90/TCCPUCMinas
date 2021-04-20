@@ -39,9 +39,14 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
 
 # Plota os gráficos das séries temporais dos tributos, após a correção pela inflação
 for tributo in pd_arrecad_diaria['Tributo'].unique():
+    '''# Plota os scatterplots arrecadação diária dos tributos
     sns.scatterplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor'], size=3, legend=False).set_title(tributo)
     plt.show()
+    # Plota os boxplots arrecadação diária dos tributos
     sns.boxplot(x=arrecad_diaria[tributo]['Valor']).set_title(tributo)
+    plt.show()'''
+    # Plota a distribuição de probabilidade dos valores da arrecadação diária dos tributos
+    sns.distplot(arrecad_diaria[tributo]['Valor']).set_title(tributo)
     plt.show()
 
 # Imprime a descrição dos dados    
@@ -182,16 +187,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
         df_teste.reset_index().loc[0, 'Data']) + ' Fim DF teste : ' + str(
         df_teste.reset_index().loc[len(df_teste) - 1, 'Data']))
     df_treino = LSTMUtil.transforma_dataframe(df_treino, 'Data')
-    df_teste = LSTMUtil.transforma_dataframe(df_teste, 'Data')
+    df_teste = LSTMUtil.transforma_dataframe(df_teste, 'Data')   
 
-    # Plota a distribuição de probabilidade dos valores da arrecadação diária dos tributos
-    sns.distplot(df_treino['Valor']).set_title(tributo)
-    plt.show()
-
-    # Plota os boxplots dos valores da arrecadação diária dos tributos
-    sns.boxplot(x=df_treino['Valor']).set_title(tributo)
-    plt.show()
-    
     # Faz o Label Encoder do dia, dia da semana e mês (apesar de dia e mês serem numéricos, o Label Encoder inicia a contagem em 0 ao invés de 1)
     encoder_dia = LabelEncoder()
     dia_treino_enc = encoder_dia.fit_transform(df_treino['Dia'].values)
@@ -224,9 +221,15 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_std)
 
     model = LSTMUnivariada(df_treino)
+    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_teste_standard_scaler.hdf5', monitor='loss', verbose=2,
+                                save_best_only=True, save_weights_only=False,
+                                mode='auto', period=1)
     model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste), 
-              epochs=100, batch_size=50)
+              epochs=100, batch_size=50, callbacks=[checkpoint])
+    
+    # Carrega o melhor modelo salvo pelo Checkpoint
+    model.load_weights('checkpoint_regressor_'+tributo+'_teste_standard_scaler.hdf5')
     
     std_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])    
     mae_std = mean_absolute_error(std_scaler.inverse_transform(saida_teste), std_scaler.inverse_transform(std_pred))
@@ -247,9 +250,15 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_rbt)
 
     model = LSTMUnivariada(df_treino)
+    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_teste_robust_scaler.hdf5', monitor='loss', verbose=2,
+                                save_best_only=True, save_weights_only=False,
+                                mode='auto', period=1)
     model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste), 
-              epochs=100, batch_size=50)
+              epochs=100, batch_size=50, callbacks=[checkpoint])
+    
+    # Carrega o melhor modelo salvo pelo Checkpoint
+    model.load_weights('checkpoint_regressor_'+tributo+'_teste_robust_scaler.hdf5')
     
     rbt_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])    
     mae_rbt = mean_absolute_error(rbt_scaler.inverse_transform(saida_teste), rbt_scaler.inverse_transform(rbt_pred))
@@ -270,9 +279,15 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     valor_arrecadacao_serie_temporal_lstm_teste = LSTMUtil.cria_intervalos_temporais(valor_teste_pwr)
 
     model = LSTMUnivariada(df_treino)
+    checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_teste_power_transformer.hdf5', monitor='loss', verbose=2,
+                                save_best_only=True, save_weights_only=False,
+                                mode='auto', period=1)
     model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste), 
-              epochs=100, batch_size=50)
+              epochs=100, batch_size=50, callbacks=[checkpoint])
+    
+    # Carrega o melhor modelo salvo pelo Checkpoint
+    model.load_weights('checkpoint_regressor_'+tributo+'_teste_power_transformer.hdf5')
     
     pwr_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])    
     mae_pwr = mean_absolute_error(pwr_scaler.inverse_transform(saida_teste), pwr_scaler.inverse_transform(pwr_pred))
