@@ -6,14 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
       <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TCC.pdf" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_multivariado.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_teste_power_transformer.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_teste_robust_scaler.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_teste_standard_scaler.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_teste_power_transformer.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_teste_robust_scaler.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_teste_standard_scaler.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_teste_power_transformer.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_teste_robust_scaler.hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_teste_standard_scaler.hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado(2).hdf5" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho.spydata" beforeDir="false" afterPath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho.spydata" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ICMS.data-00000-of-00001" beforeDir="false" />
@@ -22,6 +29,7 @@
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_IPVA.index" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD.data-00000-of-00001" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD.index" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ModelosNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosNN.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/~$TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/~$TCC.docx" afterDir="false" />
     </list>
@@ -82,6 +90,17 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TCC PUC Minas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -177,7 +196,9 @@
       <workItem from="1617892714622" duration="494000" />
       <workItem from="1617893238168" duration="53000" />
       <workItem from="1617893304059" duration="5496000" />
-      <workItem from="1618952784212" duration="1907000" />
+      <workItem from="1618952784212" duration="1998000" />
+      <workItem from="1619442068702" duration="1397000" />
+      <workItem from="1619549320403" duration="1829000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -270,7 +291,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618259205077</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="...">
+      <created>1618961950764</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1618961950764</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

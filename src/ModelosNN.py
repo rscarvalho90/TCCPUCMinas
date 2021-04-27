@@ -11,6 +11,12 @@ class LSTMUnivariada(tf.keras.Model):
         self.cria_rede_neural_univariada(df)
         self.valor = Dense(1, activation='linear', name='Valor')
 
+        ''' Faz o "build" das camadas que compõem a rede neural. '''
+        self.embedding_dia.build([None, 1])
+        self.embedding_mes.build([None, 1])
+        self.embedding_dia_semana.build([None, 1])
+        self.dense_dia_mes_valor.build([None, 1])
+        
         ''' O primeiro item da lista se refere ao mês, dia e dia da semana, já
         o segundo item se refere à LSTM, com 5 períodos (5 dias anteriores à predição) e uma variável (valor). '''
         self.build([(None, 3), (None, 5, 1)])
@@ -22,7 +28,8 @@ class LSTMUnivariada(tf.keras.Model):
         dias_distintos = df['Dia'].unique()
         meses_distintos = df['Mes'].unique()
         dias_semana_distintos = df['Dia_Semana'].unique()
-
+        
+        ''' Adiciona as camadas ao modelo. '''
         self.embedding_dia = Embedding(name='dia_embedding', input_length=1,
                                        input_dim=len(dias_distintos),
                                        output_dim=int(round(len(dias_distintos) ** 0.25, 0)))
