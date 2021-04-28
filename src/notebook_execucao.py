@@ -177,7 +177,6 @@ from src.ModelosNN import LSTMUnivariada
 import tensorflow.keras.optimizers as ko
 from tensorflow import keras
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
-from tensorflow.keras.utils import plot_model
 
 comparativo = pd.DataFrame(columns=['StandardScaler', 'RobustScaler', 'PowerTransformer'])
 
@@ -346,7 +345,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
 
     model = LSTMUnivariada(df_treino)
-    model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')    
+    model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')  
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
               epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
     print(model.summary())
