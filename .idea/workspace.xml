@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
+      <change afterPath="$PROJECT_DIR$/LSTM - ICMS - Multivariado.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LSTM - ICMS - Univariado (2).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ICMS - Multivariado - Sem remoção de outliers.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Prophet - ICMS - Ultivariado - Sem remoção de outliers - mesmas datas univariado.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado(2).hdf5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/~WRL0003.tmp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" beforeDir="false" afterPath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TCC.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ModelosNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/~WRL3540.tmp" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +174,8 @@
       <workItem from="1618952784212" duration="1998000" />
       <workItem from="1619442068702" duration="1397000" />
       <workItem from="1619549320403" duration="8648000" />
-      <workItem from="1619962446063" duration="594000" />
+      <workItem from="1619962446063" duration="1791000" />
+      <workItem from="1620823704903" duration="3081000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -290,7 +303,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619816179395</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="...">
+      <created>1620331419739</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1620331419739</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

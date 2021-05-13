@@ -22,7 +22,7 @@ class LSTMUnivariada(tf.keras.Model):
         self.build([(None, 3), (None, 5, 1)])
 
     def cria_rede_neural_univariada(self, df):
-        """ Cria rede neural "univariada" usando o Keras Functional API, retornando um modelo
+        """ Cria rede neural "univariada" usando o Keras Subclass, retornando um modelo
         do Keras. """
 
         dias_distintos = df['Dia'].unique()
@@ -81,6 +81,12 @@ class LSTMMultivariada(tf.keras.Model):
         self.df = df
         self.cria_rede_neural_multivariada(df)
         self.valor = Dense(1, activation='linear', name='Valor')
+        
+        ''' Faz o "build" das camadas que compõem a rede neural. '''
+        self.embedding_dia.build([None, 1])
+        self.embedding_mes.build([None, 1])
+        self.embedding_dia_semana.build([None, 1])
+        self.dense_dia_mes_valor.build([None, 1])
 
         ''' O primeiro item da lista se refere ao mês, dia, dia da semana, PIB do RS no trimestre anterior, 
         PIB do Brasil do mês anterior, admissões no mês anterior e demissões no mês anterior,
@@ -88,7 +94,7 @@ class LSTMMultivariada(tf.keras.Model):
         self.build([(None, 7), (None, 5, 1)])
 
     def cria_rede_neural_multivariada(self, df):
-        """ Cria rede neural "multivariada" usando o Keras Functional API, retornando um modelo
+        """ Cria rede neural "multivariada" usando o Keras Subclass, retornando um modelo
         do Keras. """
 
         dias_distintos = df['Dia'].unique()

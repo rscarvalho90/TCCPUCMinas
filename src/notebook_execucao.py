@@ -1,3 +1,4 @@
+# %%
 from src.DownloadDados import DownloadDados
 from src.Util import CorrigeValores
 import seaborn as sns
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+# %%
 dd = DownloadDados()
 
 # Gera um Pandas Dataframe com os dados de arrecadação diária de todos os tributos
@@ -13,48 +15,56 @@ pd_arrecad_diaria = DownloadDados.download_arrecadacao_sefaz_rs()
 arrecad_diaria = {}
 pd.set_option('display.float_format', lambda x: '%.5f' % x)
 
-# Gera dataframes de arrecadação diária para cada tributo, sem a correção pela inflação
+# %% Gera dataframes de arrecadação diária para cada tributo, sem a correção pela inflação
+
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     arrecad_diaria[tributo] = pd_arrecad_diaria[pd_arrecad_diaria['Tributo'] == tributo].reset_index()
     arrecad_diaria[tributo] = arrecad_diaria[tributo].drop(['index'], axis=1)
-    
+
+# %%    
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     print(tributo)
     print(arrecad_diaria[tributo]['Valor'].describe())
 
-# Plota os gráficos das séries temporais dos tributos, sem a correção pela inflação
+# %% Plota os gráficos das séries temporais dos tributos, sem a correção pela inflação
+
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     sns.scatterplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor'], size=3, legend=False).set_title(
         tributo)
     plt.show()
 
-# Corrige os valores pela inflação
+# %% Corrige os valores pela inflação
+ 
 igp = dd.download_igp()
 pd_arrecad_diaria = CorrigeValores.corrige_inflacao(pd_arrecad_diaria, igp)
 
-# Gera dataframes de arrecadação diária para cada tributo, após a correção pela inflação
+# %% Gera dataframes de arrecadação diária para cada tributo, após a correção pela inflação
+ 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     arrecad_diaria[tributo] = pd_arrecad_diaria[pd_arrecad_diaria['Tributo'] == tributo].reset_index()
     arrecad_diaria[tributo] = arrecad_diaria[tributo].drop(['index'], axis=1)
 
-# Plota os gráficos das séries temporais dos tributos, após a correção pela inflação
+# %% Plota os gráficos das séries temporais dos tributos, após a correção pela inflação
+ 
 for tributo in pd_arrecad_diaria['Tributo'].unique():
-    '''# Plota os scatterplots arrecadação diária dos tributos
+    # Plota os scatterplots arrecadação diária dos tributos
     sns.scatterplot(arrecad_diaria[tributo]['Data'], arrecad_diaria[tributo]['Valor'], size=3, legend=False).set_title(tributo)
     plt.show()
     # Plota os boxplots arrecadação diária dos tributos
     sns.boxplot(x=arrecad_diaria[tributo]['Valor']).set_title(tributo)
-    plt.show()'''
+    plt.show()
     # Plota a distribuição de probabilidade dos valores da arrecadação diária dos tributos
     sns.distplot(arrecad_diaria[tributo]['Valor']).set_title(tributo)
     plt.show()
 
-# Imprime a descrição dos dados    
+# %% Imprime a descrição dos dados
+  
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     print(tributo)
     print(arrecad_diaria[tributo]['Valor'].describe())
 
-# Cria modelo com única variável quantitativa utilizando o Facebook Prophet
+# %% Cria modelo com única variável quantitativa utilizando o Facebook Prophet
+
 from fbprophet import Prophet
 from src.ModelosUtil import ProphetUtil
 from sklearn.metrics import mean_squared_error, mean_absolute_error
@@ -65,7 +75,8 @@ pd_datas_treinos = pd.DataFrame(columns=['Inicio', 'Fim'])
 pd_performance = pd.DataFrame(columns=['MAE', 'RMSE'])
 pd_stats = pd.DataFrame(columns=['dp'])
 
-# Predição com a remoção de 'outliers'
+# %% Predição com a remoção de 'outliers'
+
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Calcula os valores em termos absolutos
     prophet = Prophet(daily_seasonality=True)    
@@ -121,7 +132,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
         'Para o tributo ' + tributo + ' o MAE foi de ' + str(mae) + '  e o RMSE foi de ' + str(
             rmse))
     
-# Predição sem a remoção de 'outliers'
+# %% Predição sem a remoção de 'outliers'
+
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Calcula os valores em termos absolutos
     prophet = Prophet(daily_seasonality=True)    
@@ -171,7 +183,8 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
         'Para o tributo ' + tributo + ' o MAE foi de ' + str(mae) + '  e o RMSE foi de ' + str(
             rmse))
 
-# Cria modelo com única variável quantitativa utilizando LSTM
+# %% Cria modelo com única variável quantitativa utilizando LSTM
+
 from src.ModelosUtil import LSTMUtil
 from src.ModelosNN import LSTMUnivariada
 import tensorflow.keras.optimizers as ko
@@ -294,8 +307,9 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     print('O MAE para o tributo '+tributo+' usando o "Power Transformer" foi de '+str(mae_pwr))
     
     comparativo.loc[tributo, 'PowerTransformer'] = mae_pwr
+    
+# %%  Treina a rede neural LSTM com única variável quantitativa utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
 
-# Treina a rede neural LSTM com única variável quantitativa utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
 for tributo in pd_arrecad_diaria['Tributo'].unique():
     # Utiliza método que extrai o dataset de teste idêntico ao utilizado no Prophet
     df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet(arrecad_diaria[tributo], pd_datas_testes.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Inicio'], pd_datas_testes.loc[tributo+' - Prophet - Univariável - Sem Remoção de Outliers', 'Fim'])   
@@ -378,8 +392,9 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     plt.ylabel('Valor (R$)')
     plt.title(tributo)
     plt.show()
-    
-# Realiza a comparação com modelos com múltiplas variáveis quantitativas com o Prophet e LSTM, para o ICMS
+
+# %% Realiza a comparação com modelos com múltiplas variáveis quantitativas com o Prophet e LSTM, para o ICMS
+
 pd_prophet_icms = ProphetUtil.transforma_dataframe(pd_arrecad_diaria[pd_arrecad_diaria['Tributo']=='ICMS'], ['Data', 'Valor'])
 
 # Baixa os dados do PIB trimestral do Rio Grande do Sul (em valores atualizados) 
@@ -434,7 +449,8 @@ pd_datas_treinos.loc['ICMS - Prophet - Multivariável', 'Fim'] = df_treino.reset
 pd_performance.loc['ICMS - Prophet - Multivariável', 'MAE'] = mae
 pd_performance.loc['ICMS - Prophet - Multivariável', 'RMSE'] = rmse
 
-# Treina a rede neural LSTM com múltiplas variáveis quantitativas utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
+# %% Treina a rede neural LSTM com múltiplas variáveis quantitativas utilizando o Power Transformer como scaler, já que foi o de melhor desempenho
+
 from src.ModelosNN import LSTMMultivariada
 
 # Utiliza método que extrai o dataset de teste idêntico ao utilizado no Prophet
@@ -535,8 +551,7 @@ plt.ylabel('Valor (R$)')
 plt.title('ICMS')
 plt.show()
 
-''' Para fins de comparação, executa treino e teste nos modelos com única variável quantitativa
-nos mesmos períodos com mútliplas variáveis quantitativas.'''
+# %% Para fins de comparação, executa treino e teste nos modelos com única variável quantitativa nos mesmos períodos com mútliplas variáveis quantitativas.
 
 # Modelo do Prophet
 
@@ -573,6 +588,8 @@ pd_datas_treinos.loc['ICMS - Prophet - Univariável (2)', 'Inicio'] = df_treino.
 pd_datas_treinos.loc['ICMS - Prophet - Univariável (2)', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
 pd_performance.loc['ICMS - Prophet - Univariável (2)', 'MAE'] = mae
 pd_performance.loc['ICMS - Prophet - Univariável (2)', 'RMSE'] = rmse
+
+# %% Para fins de comparação, executa treino e teste nos modelos com única variável quantitativa nos mesmos períodos com mútliplas variáveis quantitativas.
 
 # Modelo LSTM
 
@@ -626,7 +643,7 @@ model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], sai
           epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
 
 # Carrega o melhor modelo salvo pelo Checkpoint
-model.load_weights('checkpoint_regressor_'+tributo+'_univariado(2).hdf5')
+model.load_weights('checkpoint_regressor_ICMS_univariado(2).hdf5')
 
 # Avalia a predição do test set
 pwr_pred = model.predict([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste])
@@ -653,3 +670,70 @@ plt.xlabel('Data')
 plt.ylabel('Valor (R$)')
 plt.title('ICMS - LSTM - Única Variável Quantitativa - Datas Idênticas ao Modelo com Múltiplas Variáveis Quantitativas')
 plt.show()
+
+# %% Teste do Prophet utilizando arrecadações anteriores como regressoras
+
+pd_prophet_icms = ProphetUtil.transforma_dataframe(pd_arrecad_diaria[pd_arrecad_diaria['Tributo']=='ICMS'], ['Data', 'Valor'])
+
+# Baixa os dados do PIB trimestral do Rio Grande do Sul (em valores atualizados) 
+pd_pib_rs_trimestral = DownloadDados.download_pib_rs()
+pd_pib_br_mensal = DownloadDados.download_pib_br()
+pd_pib_br_mensal = CorrigeValores.corrige_inflacao_pib(pd_pib_br_mensal, igp)
+pd_emprego_adm_dem_mensal = DownloadDados.download_dados_emprego()
+
+# Adiciona os dados do PIB do RS(trimestre anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_pib_rs(pd_prophet_icms, pd_pib_rs_trimestral)
+# Adiciona os dados do PIB do Brasil(estimativa mês anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_pib_br(pd_prophet_icms, pd_pib_br_mensal)
+# Adiciona os dados de emprego do Brasil(mês anterior) ao dataframe
+pd_prophet_icms = ProphetUtil.adiciona_dados_emprego(pd_prophet_icms, pd_emprego_adm_dem_mensal)
+
+# Arrecadação nos últimos 5 dias
+arrecadacao_hist = LSTMUtil.cria_intervalos_temporais(pd.DataFrame(pd_prophet_icms['y']).values)
+arrecadacao_hist = pd.DataFrame(arrecadacao_hist.reshape(arrecadacao_hist.shape[0], arrecadacao_hist.shape[1]), 
+                                columns=['ARRECADACAO_D-5', 'ARRECADACAO_D-4', 'ARRECADACAO_D-3', 'ARRECADACAO_D-2', 'ARRECADACAO_D-1'])
+pd_prophet_icms = pd.concat([pd_prophet_icms[5:].reset_index(drop=True), arrecadacao_hist], axis=1)
+
+# Cria modelo com múltiplas variáveis quantitativas utilizando o Facebook Prophet
+prophet = Prophet(daily_seasonality=True)
+pd_prophet = pd_prophet_icms.reset_index(drop=True)
+df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet_multivariado(pd_prophet, pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio'], pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Fim'])   
+
+prophet.add_regressor('ADMISSOES_MES_ANTERIOR')
+prophet.add_regressor('DEMISSOES_MES_ANTERIOR')
+prophet.add_regressor('PIB_BR_MES_ANTERIOR')
+prophet.add_regressor('PIB_RS_TRIMESTRE_ANTERIOR')
+prophet.add_regressor('ARRECADACAO_D-1')
+prophet.add_regressor('ARRECADACAO_D-2')
+prophet.add_regressor('ARRECADACAO_D-3')
+prophet.add_regressor('ARRECADACAO_D-4')
+prophet.add_regressor('ARRECADACAO_D-5')
+prophet.fit(df_treino)
+predito = prophet.predict(pd.DataFrame(df_teste[['ds', 'ADMISSOES_MES_ANTERIOR', 'DEMISSOES_MES_ANTERIOR', 'PIB_BR_MES_ANTERIOR', 'PIB_RS_TRIMESTRE_ANTERIOR', 'ARRECADACAO_D-5', 'ARRECADACAO_D-4', 'ARRECADACAO_D-3', 'ARRECADACAO_D-2', 'ARRECADACAO_D-1']]))
+
+# Grava os erros
+rmse = mean_squared_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values) ** (1 / 2)
+mae = mean_absolute_error(pd.DataFrame(df_teste['y']).values, predito['yhat'].values)
+
+# Plota as predições
+fig, (sub1) = plt.subplots(1, 1, sharex=True)
+sub1.fill_between(df_teste['ds'], predito['yhat_upper'], predito['yhat_lower'], facecolor='dodgerblue')
+pred, = plt.plot(df_teste['ds'], predito['yhat'], c='blue', label='Predito')
+pred_sup, = plt.plot(df_teste['ds'], predito['yhat_upper'], c='royalblue')
+pred_inf, = plt.plot(df_teste['ds'], predito['yhat_lower'], c='royalblue')
+real = plt.scatter(df_teste['ds'], df_teste['y'], s=3, c='orange')
+plt.legend([pred, pred_sup, real],
+           ['Predito', 'Predito (limites superior e inferior)', 'Real'],
+           fontsize=8)
+fig.autofmt_xdate()
+plt.xlabel('Data')
+plt.ylabel('Valor (R$)')
+plt.title('ICMS - Prophet - Múltiplas Variáveis Quantitativas - Com arrecadações anteriores (5 dias)')
+plt.show()
+
+pd_datas_testes.loc['ICMS - Prophet - Multivariável (2)', 'Inicio'] = df_teste.reset_index().loc[0, 'ds']
+pd_datas_testes.loc['ICMS - Prophet - Multivariável (2)', 'Fim'] = df_teste.reset_index().loc[len(df_teste) - 1, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Multivariável (2)', 'Inicio'] = df_treino.reset_index().loc[0, 'ds']
+pd_datas_treinos.loc['ICMS - Prophet - Multivariável (2)', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
+pd_performance.loc['ICMS - Prophet - Multivariável (2)', 'MAE'] = mae
+pd_performance.loc['ICMS - Prophet - Multivariável (2)', 'RMSE'] = rmse
