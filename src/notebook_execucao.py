@@ -697,7 +697,11 @@ pd_prophet_icms = pd.concat([pd_prophet_icms[5:].reset_index(drop=True), arrecad
 # Cria modelo com múltiplas variáveis quantitativas utilizando o Facebook Prophet
 prophet = Prophet(daily_seasonality=True)
 pd_prophet = pd_prophet_icms.reset_index(drop=True)
-df_treino, df_teste = LSTMUtil.gera_teste_identico_prophet_multivariado(pd_prophet, pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio'], pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Fim'])   
+
+# Separa os sets de treinamento e de testes
+indice_divisao_treino_teste = pd_prophet[pd_prophet['ds']==pd_datas_testes.loc['ICMS - Prophet - Multivariável', 'Inicio']].index[0]
+df_treino = pd_prophet[:indice_divisao_treino_teste]
+df_teste = pd_prophet[indice_divisao_treino_teste:]
 
 prophet.add_regressor('ADMISSOES_MES_ANTERIOR')
 prophet.add_regressor('DEMISSOES_MES_ANTERIOR')
