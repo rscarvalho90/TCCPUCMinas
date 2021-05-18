@@ -741,3 +741,5 @@ pd_datas_treinos.loc['ICMS - Prophet - Multivariável (2)', 'Inicio'] = df_trein
 pd_datas_treinos.loc['ICMS - Prophet - Multivariável (2)', 'Fim'] = df_treino.reset_index().loc[len(df_treino) - 1, 'ds']
 pd_performance.loc['ICMS - Prophet - Multivariável (2)', 'MAE'] = mae
 pd_performance.loc['ICMS - Prophet - Multivariável (2)', 'RMSE'] = rmse
+
+pyplot.show()

@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
-      <change afterPath="$PROJECT_DIR$/Prophet - ICMS - Multivariado - Sem remoção de outliers - Arrecadação últimos 5 dias.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado(2).hdf5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/~WRL0003.tmp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TCC.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/~WRL3540.tmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ModelosNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosNN.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,19 +65,6 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TCC PUC Minas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -184,7 +165,8 @@
       <workItem from="1619549320403" duration="8648000" />
       <workItem from="1619962446063" duration="1791000" />
       <workItem from="1620823704903" duration="4369000" />
-      <workItem from="1621020735737" duration="659000" />
+      <workItem from="1621020735737" duration="706000" />
+      <workItem from="1621345299714" duration="750000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -326,7 +308,14 @@
       <option name="project" value="LOCAL" />
       <updated>1620937619234</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="...">
+      <created>1621025555162</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1621025555162</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

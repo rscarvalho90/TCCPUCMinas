@@ -113,10 +113,10 @@ class LSTMMultivariada(tf.keras.Model):
                                        input_dim=len(dias_semana_distintos),
                                        output_dim=int(round(len(dias_semana_distintos) ** 0.25, 0)))
         self.flatten_dia_semana = Flatten()
-        self.flatten_pib_rs = Flatten()
-        self.flatten_pib_br = Flatten()
-        self.flatten_admissoes = Flatten()
-        self.flatten_admissoes = Flatten()
+        self.flatten_pib_rs = Flatten(name='pib_rs_flt')
+        self.flatten_pib_br = Flatten(name='pib_br_flt')
+        self.flatten_admissoes = Flatten(name='admissoes_flt')
+        self.flatten_demissoes = Flatten(name='demissoes_flt')
         self.concatenate_dia_mes = Concatenate(axis=-1, name='dia_mes_concatenate')        
         self.dense_dia_mes = Dense(2, activation='relu', name='dia_mes_dense')
         self.lstm_valor = LSTM(1, name='valor_lstm')
@@ -144,7 +144,7 @@ class LSTMMultivariada(tf.keras.Model):
         flt_pib_rs = self.flatten_pib_rs(dia_mes_tensor[:, 3])
         flt_pib_br =  self.flatten_pib_br(dia_mes_tensor[:, 4])
         flt_admissoes =  self.flatten_admissoes(dia_mes_tensor[:, 5])
-        flt_demissoes = self.flatten_admissoes(dia_mes_tensor[:, 6])
+        flt_demissoes = self.flatten_demissoes(dia_mes_tensor[:, 6])
         
         concat_dia_mes = self.concatenate_dia_mes([flt_dia, flt_mes, flt_dia_semana, flt_pib_rs, flt_pib_br, flt_admissoes, flt_demissoes])
         dense_dia_mes = self.dense_dia_mes(concat_dia_mes)
