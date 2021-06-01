@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
-      <change afterPath="$PROJECT_DIR$/TCC (Recuperação Automática).docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/~WRL1906.tmp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TCC.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/~WRL1906.tmp" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +165,7 @@
       <workItem from="1619962446063" duration="1791000" />
       <workItem from="1620823704903" duration="4369000" />
       <workItem from="1621020735737" duration="706000" />
-      <workItem from="1621345299714" duration="1434000" />
+      <workItem from="1621345299714" duration="2170000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -331,7 +328,21 @@
       <option name="project" value="LOCAL" />
       <updated>1621358041401</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="...">
+      <created>1621358151638</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1621358151638</updated>
+    </task>
+    <task id="LOCAL-00025" summary="...">
+      <created>1621363483668</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1621363483669</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

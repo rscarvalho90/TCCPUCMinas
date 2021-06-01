@@ -60,8 +60,8 @@ class LSTMUnivariada(tf.keras.Model):
         # dia_mes_tensor[:, 1] são os dados do mês
         # dia_mes_tensor[:, 2] são os dados do dia da semana
         flt_dia = self.flatten_dia(self.embedding_dia(dia_mes_tensor[:, 0]))
-        flt_mes = self.flatten_mes(self.embedding_dia(dia_mes_tensor[:, 1]))
-        flt_dia_semana = self.flatten_dia_semana(self.embedding_dia(dia_mes_tensor[:, 2]))
+        flt_mes = self.flatten_mes(self.embedding_mes(dia_mes_tensor[:, 1]))
+        flt_dia_semana = self.flatten_dia_semana(self.embedding_dia_semana(dia_mes_tensor[:, 2]))
         concat_dia_mes = self.concatenate_dia_mes([flt_dia, flt_mes, flt_dia_semana])
         dense_dia_mes = self.dense_dia_mes(concat_dia_mes)
         lstm_valor = self.lstm_valor(valor_tensor)
@@ -139,8 +139,8 @@ class LSTMMultivariada(tf.keras.Model):
         # dia_mes_tensor[:, 5] são os dados de admissões no mês anterior
         # dia_mes_tensor[:, 6] são os dados de demissões no mês anterior
         flt_dia = self.flatten_dia(self.embedding_dia(dia_mes_tensor[:, 0]))
-        flt_mes = self.flatten_mes(self.embedding_dia(dia_mes_tensor[:, 1]))
-        flt_dia_semana = self.flatten_dia_semana(self.embedding_dia(dia_mes_tensor[:, 2]))
+        flt_mes = self.flatten_mes(self.embedding_mes(dia_mes_tensor[:, 1]))
+        flt_dia_semana = self.flatten_dia_semana(self.embedding_dia_semana(dia_mes_tensor[:, 2]))
         flt_pib_rs = self.flatten_pib_rs(dia_mes_tensor[:, 3])
         flt_pib_br =  self.flatten_pib_br(dia_mes_tensor[:, 4])
         flt_admissoes =  self.flatten_admissoes(dia_mes_tensor[:, 5])
