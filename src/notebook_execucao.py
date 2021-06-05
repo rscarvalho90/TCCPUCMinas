@@ -238,7 +238,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     checkpoint = ModelCheckpoint('checkpoint_regressor_'+tributo+'_teste_standard_scaler.hdf5', monitor='loss', verbose=2,
                                 save_best_only=True, save_weights_only=False,
                                 mode='auto', period=1)
-    model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
+    model.compile(optimizer=ko.Adam(lr=0.001), loss='mse')
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste), 
               epochs=100, batch_size=50, callbacks=[checkpoint])
     
@@ -360,7 +360,7 @@ for tributo in pd_arrecad_diaria['Tributo'].unique():
     tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
 
     model = LSTMUnivariada(df_treino)
-    model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')  
+    model.compile(optimizer=ko.Adam(lr=0.001), loss='mse')  
     model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
               epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
     print(model.summary())
@@ -639,7 +639,7 @@ logdir = "logs/scalars/"
 tensorboard_callback = TensorBoard(log_dir=logdir, profile_batch = 100000000) 
 
 model = LSTMUnivariada(df_treino)
-model.compile(optimizer=ko.Adam(lr=0.1), loss='mse')
+model.compile(optimizer=ko.Adam(lr=0.001), loss='mse')
 model.fit([np_dia_mes_treino, valor_arrecadacao_serie_temporal_lstm_treino], saida_treino, validation_data=([np_dia_mes_teste, valor_arrecadacao_serie_temporal_lstm_teste], saida_teste),
           epochs=1000, batch_size=50, callbacks=[checkpoint, tensorboard_callback, early_stopping])
 

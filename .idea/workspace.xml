@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
-      <change beforePath="$PROJECT_DIR$/~WRL1906.tmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" beforeDir="false" afterPath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LSTM - ICMS - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - ICMS - Univariado.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LSTM - IPVA - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - IPVA - Univariado.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LSTM - ITCD - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - ITCD - Univariado.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ModelosNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -166,6 +176,9 @@
       <workItem from="1620823704903" duration="4369000" />
       <workItem from="1621020735737" duration="706000" />
       <workItem from="1621345299714" duration="2170000" />
+      <workItem from="1622583814155" duration="83000" />
+      <workItem from="1622583945052" duration="11000" />
+      <workItem from="1622903477685" duration="764000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>

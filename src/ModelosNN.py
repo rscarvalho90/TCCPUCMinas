@@ -15,7 +15,6 @@ class LSTMUnivariada(tf.keras.Model):
         self.embedding_dia.build([None, 1])
         self.embedding_mes.build([None, 1])
         self.embedding_dia_semana.build([None, 1])
-        self.dense_dia_mes_valor.build([None, 1])
         
         ''' O primeiro item da lista se refere ao mês, dia e dia da semana, já
         o segundo item se refere à LSTM, com 5 períodos (5 dias anteriores à predição) e uma variável (valor). '''
@@ -47,7 +46,6 @@ class LSTMUnivariada(tf.keras.Model):
         self.lstm_valor = LSTM(1, name='valor_lstm')
         self.dense_valor = Dense(1, activation='relu', name='valor_dense')
         self.concatenate_dia_mes_valor = Concatenate(axis=-1, name='dia_mes_valor_concatenate')
-        self.dense_dia_mes_valor = Dense(1, activation='sigmoid', name='dia_mes_valor_dense')
 
     def call(self, inputs, **kwargs):
         # inputs[0] são os dados de dia e mês
@@ -86,7 +84,6 @@ class LSTMMultivariada(tf.keras.Model):
         self.embedding_dia.build([None, 1])
         self.embedding_mes.build([None, 1])
         self.embedding_dia_semana.build([None, 1])
-        self.dense_dia_mes_valor.build([None, 1])
 
         ''' O primeiro item da lista se refere ao mês, dia, dia da semana, PIB do RS no trimestre anterior, 
         PIB do Brasil do mês anterior, admissões no mês anterior e demissões no mês anterior,
@@ -122,7 +119,6 @@ class LSTMMultivariada(tf.keras.Model):
         self.lstm_valor = LSTM(1, name='valor_lstm')
         self.dense_valor = Dense(1, activation='relu', name='valor_dense')
         self.concatenate_dia_mes_valor = Concatenate(axis=-1, name='dia_mes_valor_concatenate')
-        self.dense_dia_mes_valor = Dense(1, activation='sigmoid', name='dia_mes_valor_dense')
 
     def call(self, inputs, **kwargs):
         # inputs[0] são os dados de dia e mês
