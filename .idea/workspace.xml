@@ -6,16 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8c0be772-95b0-4bb4-8806-88159895be1b" name="Default Changelist" comment="...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" beforeDir="false" afterPath="$PROJECT_DIR$/Dados Spyder - Escrita trabalho 2.spydata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LSTM - ICMS - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - ICMS - Univariado.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LSTM - IPVA - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - IPVA - Univariado.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LSTM - ITCD - Univariado.png" beforeDir="false" afterPath="$PROJECT_DIR$/LSTM - ITCD - Univariado.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TCC.docx" beforeDir="false" afterPath="$PROJECT_DIR$/TCC.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_ICMS_univariado.hdf5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_IPVA_univariado.hdf5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" beforeDir="false" afterPath="$PROJECT_DIR$/checkpoint_regressor_ITCD_univariado.hdf5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ModelosNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ModelosNN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/notebook_execucao.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/notebook_execucao.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +68,17 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TCC PUC Minas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -178,7 +183,10 @@
       <workItem from="1621345299714" duration="2170000" />
       <workItem from="1622583814155" duration="83000" />
       <workItem from="1622583945052" duration="11000" />
-      <workItem from="1622903477685" duration="764000" />
+      <workItem from="1622903477685" duration="847000" />
+      <workItem from="1624658777173" duration="300000" />
+      <workItem from="1624659184408" duration="393000" />
+      <workItem from="1624659615691" duration="675000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -355,7 +363,14 @@
       <option name="project" value="LOCAL" />
       <updated>1621363483669</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="...">
+      <created>1622905566722</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1622905566722</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
