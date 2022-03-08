@@ -64,19 +64,6 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="TCC PUC Minas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -186,6 +173,9 @@
       <workItem from="1624659184408" duration="393000" />
       <workItem from="1624659615691" duration="675000" />
       <workItem from="1625700930298" duration="180000" />
+      <workItem from="1626897012416" duration="55000" />
+      <workItem from="1630440007769" duration="3000" />
+      <workItem from="1630440059334" duration="18000" />
     </task>
     <task id="LOCAL-00001" summary="Correção no extrator da inflação">
       <created>1612127427984</created>
@@ -376,7 +366,14 @@
       <option name="project" value="LOCAL" />
       <updated>1625700987002</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="...">
+      <created>1626897040443</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1626897040443</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -406,9 +403,9 @@
     <MESSAGE value="Conclusão arquivo" />
     <MESSAGE value="Finalização do modelo com única variável quantitativa e início da criação de modelo com múltiplas variáveis quantitaivas" />
     <MESSAGE value="Treinamento LSTM" />
-    <MESSAGE value="..." />
     <MESSAGE value="Apresentação Power Point" />
-    <option name="LAST_COMMIT_MESSAGE" value="Apresentação Power Point" />
+    <MESSAGE value="..." />
+    <option name="LAST_COMMIT_MESSAGE" value="..." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
